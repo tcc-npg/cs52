@@ -15,7 +15,7 @@ Download and install the following:
    the `xampp/htdocs/` folder).
    _(e.g.):_
    ```shell
-   cd C:\xampp\htdocs
+   cd C:/xampp/htdocs
    ```
 2. You may download or clone this repository using the command below. Just type it in the Git bash terminal:
     ```shell
