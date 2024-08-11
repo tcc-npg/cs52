@@ -1,0 +1,47 @@
+# Composer dependencies
+/vendor/
+
+# Environment variables
+/.env
+.env
+
+# IDE/Editor configurations
+/.vscode/
+/nbproject/
+/.idea/
+/*.sublime-workspace
+
+# Node.js dependencies
+/node_modules/
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Logs and cache
+/writable/logs/*
+/writable/cache/*
+/writable/debugbar/*
+/writable/session/*
+/writable/uploads/*
+
+# Ignoring coverage reports
+/tests/_output/coverage/
+coverage.xml
+coverage/
+
+# Ignoring user-specific files
+*.bak
+*.swp
+*.tmp
+
+# Ignoring build artifacts
+/build/
+/dist/
+/public/build/
+
+# Composer-generated files
+composer.lock
+
+# PHPUnit result cache
+.phpunit.result.cache
