@@ -34,21 +34,36 @@ Download and install the following:
    ```shell
    mv env .env
    ```
-6. To run the app, type in:
+6. Start XAMPP and click the `Start` buttons of Apache and MySQL apps. Once successfully started, Click the `Admin` button of MySQL. This will open the browser and take you to `phpMyAdmin` page.
+<br/>
+<br/>
+7. Once the page is loaded, click the `New` button located at the left panel of the page. Input the database name and then click the create button.
+<br/>
+<br/>
+8. Open the `.env` file and remove the leading `#` of the `database.default.**` properties and input your database configuration. _The configuration below assumes you are using the default port and the default root account._
+   ```dotenv
+   database.default.hostname=localhost
+   database.default.database=the_db_name
+   database.default.username=root
+   database.default.password=
+   database.default.DBDriver=MySQLi
+   database.default.DBPrefix=
+   database.default.port=3306
+   ```
+
+9. To run the app, type in:
     ```shell
    php spark serve
     ```
-7. Open your browser and navigate to `http://localhost:8080`.
 
-![img.png](img.png)
+10. Open your browser and navigate to `http://localhost:8080`. This will take you to login page. You may then register for an account by click the register link.
 
-## Development
+![register.png](register.png)
+![dashboard.png](dashboard.png)
 
-_to add_
+## Development Guide
 
-## Development Guides
-
-_to add_
+_TO DO_
 
 ## Modules
 
