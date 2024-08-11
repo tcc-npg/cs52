@@ -4,10 +4,10 @@
 
 Download and install the following:
 
-- Download and install [XAMPP](https://www.apachefriends.org/download.html) version 8.2.12 / PHP 8.2.12.
-- Download and install [Composer](https://getcomposer.org/download/).
-- Download and install [Git](https://git-scm.com/downloads) client.
-- Download and install [Visual Studio Code](https://code.visualstudio.com/Download).
+- [XAMPP](https://www.apachefriends.org/download.html) version 8.2.12 / PHP 8.2.12.
+- [Composer](https://getcomposer.org/download/).
+- [Git](https://git-scm.com/downloads) client.
+- [Visual Studio Code](https://code.visualstudio.com/Download).
 
 ## Setup
 
