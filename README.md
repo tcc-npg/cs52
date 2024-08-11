@@ -13,6 +13,10 @@ Download and install the following:
 
 1. Open the Git bash terminal. Navigate to the folder where you want to place the project (preferably inside
    the `xampp/htdocs/` folder).
+   _(e.g.):_
+   ```shell
+   cd C:\xampp\htdocs
+   ```
 2. Clone this repository using the command below. Just type it in the Git bash terminal:
     ```shell
     git clone https://github.com/tcc-npg/cs52.git
@@ -37,11 +41,19 @@ Download and install the following:
 
 ![img.png](img.png)
 
+## Development
+
+_to add_
+
+## Development Guides
+
+_to add_
+
 ## Modules
 
 - Academic Resources Library
 - Forums
 - Activity Compiler
-- *Fresh Start*
+- _Fresh Start_
 - Study Assistance
 - ...
