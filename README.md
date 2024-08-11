@@ -17,10 +17,11 @@ Download and install the following:
    ```shell
    cd C:\xampp\htdocs
    ```
-2. Clone this repository using the command below. Just type it in the Git bash terminal:
+2. You may download or clone this repository using the command below. Just type it in the Git bash terminal:
     ```shell
     git clone https://github.com/tcc-npg/cs52.git
     ```
+
 3. Go inside the project directory:
     ```shell
     cd cs52
