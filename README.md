@@ -37,7 +37,7 @@ Download and install the following:
    mv env .env
    ```
 
-6. Start XAMPP and click the `Start` buttons of Apache and MySQL apps. Once successfully started, Click the `Admin`
+6. Start XAMPP and click the `Start` buttons of Apache and MySQL services. Once successfully started, Click the `Admin`
    button of MySQL. This will open the browser and take you to `phpMyAdmin` page.
 
 7. Once the page is loaded, click the `New` button located at the left panel of the page. Input the database name and
@@ -67,7 +67,7 @@ Download and install the following:
    ```
 
 11. Open your browser and navigate to `http://localhost:8080`. This will take you to login page. You may then register
-    for an account by click the register link.
+    for an account by clicking the register link.
 
 ![register.png](register.png)
 ![dashboard.png](dashboard.png)
