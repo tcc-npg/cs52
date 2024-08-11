@@ -24,6 +24,11 @@ Thumbs.db
 /writable/debugbar/*
 /writable/session/*
 /writable/uploads/*
+!/writable/logs/
+!/writable/cache/
+!/writable/debugbar/
+!/writable/session/
+!/writable/uploads/
 
 # Ignoring coverage reports
 /tests/_output/coverage/
