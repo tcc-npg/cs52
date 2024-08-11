@@ -36,7 +36,7 @@ Download and install the following:
    ```
 6. Start XAMPP and click the `Start` buttons of Apache and MySQL apps. Once successfully started, Click the `Admin` button of MySQL. This will open the browser and take you to `phpMyAdmin` page.
 7. Once the page is loaded, click the `New` button located at the left panel of the page. Input the database name and then click the create button.
-8. Open the `.env` file and remove the leading `#` of the `database.default.**` properties and input your database configuration. _The configuration below assumes you are using the default port and the default root account._
+8. Open the `.env` file and remove the leading `#` of the `database.default.**` properties and input your database configuration. _The configuration below assumes you are using the default port and the default root account. Change `the_db_name` to the database name you used in step 7._
    ```dotenv
    database.default.hostname=localhost
    database.default.database=the_db_name
