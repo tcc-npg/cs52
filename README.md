@@ -15,7 +15,7 @@ Download and install the following:
    the `xampp/htdocs/` folder).
 2. Clone this repository using the command below. Just type it in the Git bash terminal:
     ```shell
-    git clone
+    git clone https://github.com/tcc-npg/cs52.git
     ```
 3. Go inside the project directory:
     ```shell
@@ -25,11 +25,17 @@ Download and install the following:
    ```shell
    composer install
    ```
-5. To run the app, type in:
+5. Rename the `env` file to `.env`:
+   ```shell
+   mv env .env
+   ```
+6. To run the app, type in:
     ```shell
    php spark serve
     ```
-6. Open your browser and navigate to `http://localhost:8080`.
+7. Open your browser and navigate to `http://localhost:8080`.
+
+![img.png](img.png)
 
 ## Modules
 
