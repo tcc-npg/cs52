@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Config;
 
+use CodeIgniter\Shield\Authentication\Actions\EmailActivator;
 use CodeIgniter\Shield\Config\Auth as ShieldAuth;
 use CodeIgniter\Shield\Authentication\Actions\ActionInterface;
 use CodeIgniter\Shield\Authentication\AuthenticatorInterface;
@@ -50,7 +51,7 @@ class Auth extends ShieldAuth
         'action_email_2fa'            => '\CodeIgniter\Shield\Views\email_2fa_show',
         'action_email_2fa_verify'     => '\CodeIgniter\Shield\Views\email_2fa_verify',
         'action_email_2fa_email'      => '\CodeIgniter\Shield\Views\Email\email_2fa_email',
-        'action_email_activate_show'  => '\CodeIgniter\Shield\Views\email_activate_show',
+        'action_email_activate_show'  => '\App\Views\auth\verify-email-code',
         'action_email_activate_email' => '\CodeIgniter\Shield\Views\Email\email_activate_email',
         'magic-link-login'            => '\CodeIgniter\Shield\Views\magic_link_form',
         'magic-link-message'          => '\CodeIgniter\Shield\Views\magic_link_message',
@@ -96,7 +97,7 @@ class Auth extends ShieldAuth
      * @var array<string, class-string<ActionInterface>|null>
      */
     public array $actions = [
-        'register' => null,
+        'register' => EmailActivator::class,
         'login'    => null,
     ];
 
@@ -218,10 +219,10 @@ class Auth extends ShieldAuth
     public array $usernameValidationRules = [
         'label' => 'Auth.username',
         'rules' => [
-            'required',
-            'max_length[30]',
-            'min_length[3]',
-            'regex_match[/\A[a-zA-Z0-9\.]+\z/]',
+//            'required',
+//            'max_length[30]',
+//            'min_length[3]',
+//            'regex_match[/\A[a-zA-Z0-9\.]+\z/]',
         ],
     ];
 
