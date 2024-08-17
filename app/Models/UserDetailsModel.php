@@ -13,8 +13,8 @@ class UserDetailsModel extends Model
     protected $returnType = UserDetailsEntity::class;
     protected $allowedFields = ['first_name', 'middle_name', 'last_name', 'user_type', 'gender', 'phone_number', 'address'];
 
-    public function getUserDetails(int $id): array|object
+    public function getUserDetails(int $id): array|object|null
     {
-        return $this->where('user_id', $id)->first();
+        return $this->where('user_id', $id)->first() ?? null;
     }
 }

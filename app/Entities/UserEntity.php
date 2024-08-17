@@ -13,12 +13,12 @@ class UserEntity extends User
         parent::__construct($data);
     }
 
-    public function getUserDetails(): UserDetailsEntity|null
+    public function getUserDetails(): ?UserDetailsEntity
     {
         return $this->userDetails;
     }
 
-    public function setUserDetails(UserDetailsEntity $userDetails): void
+    public function setUserDetails(?UserDetailsEntity $userDetails): void
     {
         $this->userDetails = $userDetails;
     }
