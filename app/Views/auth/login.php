@@ -6,7 +6,6 @@
         <div class="authentication-inner">
             <div class="card">
                 <div class="card-body">
-                    <!-- /Logo -->
                     <h4 class="mb-2">Welcome to <?= APP_NAME; ?>! 👋</h4>
                     <p class="mb-4">Sign in</p>
                     <form action="<?= url_to('login') ?>" method="post">
@@ -84,7 +83,6 @@
                     </p>
                 </div>
             </div>
-            <!-- /Register -->
         </div>
     </div>
 </div>

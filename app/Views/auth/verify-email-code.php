@@ -6,7 +6,6 @@
         <div class="authentication-inner">
             <div class="card">
                 <div class="card-body">
-                    <!-- /Logo -->
                     <h4 class="mb-2">Email Activation</h4>
                     <p class="mb-4">We just sent an email to you with a code to confirm your email address. Copy that code and paste it below.</p>
                     <form action="<?= url_to('auth-action-verify') ?>" method="post">
@@ -34,7 +33,6 @@
                     </form>
                 </div>
             </div>
-            <!-- /Register -->
         </div>
     </div>
 </div>
