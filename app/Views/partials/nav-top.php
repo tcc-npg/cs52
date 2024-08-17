@@ -10,7 +10,7 @@
 
     <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
         <div class="navbar-nav align-items-center">
-            <h5 class="card-title text-primary mb-0">Howdy, Car!</h5>
+            <h5 class="card-title text-primary mb-0">Howdy 👋</h5>
         </div>
 
         <ul class="navbar-nav flex-row align-items-center ms-auto">
