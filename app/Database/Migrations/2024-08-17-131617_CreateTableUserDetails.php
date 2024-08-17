@@ -4,21 +4,16 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreateProfessors extends Migration
+class CreateTableUserDetails extends Migration
 {
-    public function up()
+    public function up(): void
     {
         $this->forge->addField([
-            'id' => [
-                'type' => 'INT',
-                'constraint' => 11,
-                'unsigned' => true,
-                'auto_increment' => true,
-            ],
             'user_id' => [
                 'type' => 'INT',
-                'constraint' => 11,
+                'null' => false,
                 'unsigned' => true,
+                'auto_increment' => true,
             ],
             'first_name' => [
                 'type' => 'VARCHAR',
@@ -27,7 +22,7 @@ class CreateProfessors extends Migration
             ],
             'middle_name' => [
                 'type' => 'VARCHAR',
-                'null' => false,
+                'null' => true,
                 'constraint' => '50',
             ],
             'last_name' => [
@@ -35,29 +30,34 @@ class CreateProfessors extends Migration
                 'null' => false,
                 'constraint' => '50',
             ],
-            'address' => [
-                'type' => 'VARCHAR',
+            'gender' => [
+                'type' => 'ENUM',
                 'null' => false,
-                'constraint' => '255',
+                'constraint' => ['M', 'F'],
             ],
             'phone_number' => [
                 'type' => 'VARCHAR',
                 'null' => false,
                 'constraint' => '11',
             ],
-            // for future just in case gamitin sa ibang depts
-            'department_id' => [
-                'type' => 'INT',
-                'null' => true
+            'address' => [
+                'type' => 'VARCHAR',
+                'null' => false,
+                'constraint' => '255',
             ],
+            'user_type' => [
+                'type' => 'ENUM',
+                'null' => false,
+                'constraint' => ['STU', 'PROF'],
+            ]
         ]);
-        $this->forge->addKey('id', true);
-        $this->forge->addForeignKey('user_id', 'users', 'id', 'DO NOTHING', 'CASCADE');
-        $this->forge->createTable('professors');
+        $this->forge->addPrimaryKey('user_id');
+        $this->forge->addForeignKey('user_id', 'users', 'id', '', 'CASCADE');
+        $this->forge->createTable('user_details');
     }
 
-    public function down()
+    public function down(): void
     {
-        $this->forge->dropTable('professors');
+        $this->forge->dropTable('user_details');
     }
 }
