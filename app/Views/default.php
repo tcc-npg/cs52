@@ -43,5 +43,6 @@
 </div>
 <!-- / Layout wrapper -->
 <?= $this->include('partials/scripts'); ?>
+<?= $this->renderSection('nonceScript'); ?>
 </body>
 </html>

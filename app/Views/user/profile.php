@@ -2,22 +2,22 @@
 <?= $this->section('pageTitle'); ?>- Dashboard<?= $this->endSection('pageTitle'); ?>
 <?= $this->section('content'); ?>
 <div class="container-xxl flex-grow-1 container-p-y">
-    <div
-            class="bs-toast toast bg-success fade toast-placement-ex m-2 top-0 start-50 translate-middle-x"
-            role="alert"
-            aria-live="assertive"
-            aria-atomic="true"
-            data-delay="2000"
-            id="update_successful_toast"
-    >
-        <div class="toast-header">
-            <i class='bx bxs-check-circle'></i>
-            <div class="me-auto fw-semibold">Success</div>
-            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-        <div class="toast-body"><?= session('update_successful'); ?></div>
-    </div>
     <?php if (session('update_successful')): ?>
+        <div
+                class="bs-toast toast bg-success fade toast-placement-ex m-2 top-0 start-50 translate-middle-x"
+                role="alert"
+                aria-live="assertive"
+                aria-atomic="true"
+                data-delay="2000"
+                id="update_successful_toast"
+        >
+            <div class="toast-header">
+                <i class='bx bxs-check-circle'></i>
+                <div class="me-auto fw-semibold">&nbsp;Success</div>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body"><?= session('update_successful'); ?></div>
+        </div>
         <?= $this->section('nonceScript'); ?>
             <script>
                 const toastPlacement = new bootstrap.Toast(document.querySelector('#update_successful_toast'));
