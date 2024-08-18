@@ -31,9 +31,9 @@ app.baseURL = 'http://localhost:8080/'
 #--------------------------------------------------------------------
 
 database.default.hostname = localhost
-database.default.database = fjmsd
+database.default.database = ci4_test
 database.default.username = root
-database.default.password = 
+database.default.password = root
 database.default.DBDriver = MySQLi
 database.default.DBPrefix =
 database.default.port = 3306
