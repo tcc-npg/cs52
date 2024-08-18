@@ -22,4 +22,8 @@ class UserEntity extends User
     {
         $this->userDetails = $userDetails;
     }
+
+    public function isProfileComplete(): bool {
+        return !is_null($this->userDetails);
+    }
 }

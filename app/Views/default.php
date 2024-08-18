@@ -11,10 +11,10 @@
 
 <body>
 <!-- Layout wrapper -->
-<div class="layout-wrapper layout-content-navbar">
+<div class="layout-wrapper layout-content-navbar <?= !auth()->user()->getUserDetails()->isProfileComplete() ? 'layout-without-menu' : ''; ?>">
     <div class="layout-container">
         <!-- Menu -->
-        <?= $this->include('partials/menu'); ?>
+        <?= auth()->user()->getUserDetails()->isProfileComplete() ? $this->include('partials/menu') : ''; ?>
         <!-- / Menu -->
 
         <!-- Layout container -->

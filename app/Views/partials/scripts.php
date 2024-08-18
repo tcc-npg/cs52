@@ -14,6 +14,9 @@
 <!-- Main JS -->
 <script src="<?= base_url('/assets/js/main.js'); ?>"></script>
 
+<!-- Custom -->
+<script src="<?= base_url('/assets/js/custom.js'); ?>"></script>
+
 <!-- Page JS -->
 <script src="<?= base_url('/assets/js/dashboards-analytics.js'); ?>"></script>
 

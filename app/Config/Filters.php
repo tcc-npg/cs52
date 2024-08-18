@@ -2,6 +2,7 @@
 
 namespace Config;
 
+use App\Filters\NewAccountFilter;
 use CodeIgniter\Config\Filters as BaseFilters;
 use CodeIgniter\Filters\Cors;
 use CodeIgniter\Filters\CSRF;
@@ -34,6 +35,7 @@ class Filters extends BaseFilters
         'forcehttps'    => ForceHTTPS::class,
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
+        'new-user'      => NewAccountFilter::class,
     ];
 
     /**
@@ -70,6 +72,7 @@ class Filters extends BaseFilters
     public array $globals = [
         'before' => [
             'session' => ['except' => ['login*', 'register', 'auth/a/*', 'logout']],
+            'new-user' => ['except' => ['login*', 'register', 'auth/a/*', 'logout', 'profile*']]
             // 'honeypot',
             // 'csrf',
             // 'invalidchars',

@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Entities\UserEntity;
 use CodeIgniter\Controller;
 use CodeIgniter\HTTP\CLIRequest;
 use CodeIgniter\HTTP\IncomingRequest;
@@ -43,6 +44,9 @@ abstract class BaseController extends Controller
      */
     // protected $session;
 
+    /** @var ?UserEntity $user */
+    protected ?UserEntity $user;
+
     /**
      * @return void
      */
@@ -52,6 +56,7 @@ abstract class BaseController extends Controller
         parent::initController($request, $response, $logger);
 
         // Preload any models, libraries, etc, here.
+        $this->user = auth()->user();
 
         // E.g.: $this->session = \Config\Services::session();
     }

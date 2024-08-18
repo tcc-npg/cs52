@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Entities\UserDetailsEntity;
 use App\Entities\UserEntity;
 use CodeIgniter\Shield\Models\UserModel as ShieldUserModel;
 
@@ -18,9 +19,9 @@ class UserModel extends ShieldUserModel
             return $data;
         }
         /** @var UserDetailsModel $userInfoModel */
-        $userInfoModel = model(UserDetailsModel::class);
+        $userDetailsModel = model(UserDetailsModel::class);
 
-        $data['data']->setUserDetails($userInfoModel->getUserDetails($data['id']));
+        $data['data']->setUserDetails($userDetailsModel->getUserDetails($data['id']) ?? new UserDetailsEntity());
 
         return $data;
     }

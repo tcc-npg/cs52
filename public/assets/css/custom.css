@@ -1,3 +1,9 @@
 .app-brand-text.demo {
     text-transform: uppercase;
 }
+
+.required::after {
+    content: '  *';
+    color: #fc5656;
+    font-weight: bolder;
+}

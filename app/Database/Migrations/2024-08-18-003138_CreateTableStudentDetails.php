@@ -5,7 +5,7 @@ namespace App\Database\Migrations;
 use CodeIgniter\Database\Migration;
 use CodeIgniter\Database\RawSql;
 
-class CreateTableUserDetails extends Migration
+class CreateTableStudentDetails extends Migration
 {
     public function up(): void
     {
@@ -13,42 +13,24 @@ class CreateTableUserDetails extends Migration
             'user_id' => [
                 'type' => 'int',
                 'constraint' => 11,
-                'unsigned' => true
+                'unsigned' => true,
+                'null' => false,
             ],
-            'first_name' => [
+            'student_number' => [
                 'type' => 'varchar',
+                'constraint' => 10,
                 'null' => false,
-                'constraint' => '50',
             ],
-            'middle_name' => [
+            'year_level' => [
+                'type' => 'tinyint',
+                'constraint' => 1,
+                'null' => false,
+                'default' => 1,
+            ],
+            'program_code' => [
                 'type' => 'varchar',
-                'null' => true,
-                'constraint' => '50',
-            ],
-            'last_name' => [
-                'type' => 'varchar',
+                'constraint' => 10,
                 'null' => false,
-                'constraint' => '50',
-            ],
-            'gender' => [
-                'type' => 'enum',
-                'null' => false,
-                'constraint' => ['M', 'F'],
-            ],
-            'phone_number' => [
-                'type' => 'varchar',
-                'null' => false,
-                'constraint' => '11',
-            ],
-            'address' => [
-                'type' => 'varchar',
-                'null' => false,
-                'constraint' => '255',
-            ],
-            'user_type' => [
-                'type' => 'enum',
-                'null' => false,
-                'constraint' => ['STU', 'PROF'],
             ],
             'created_at' => [
                 'type' => 'datetime',
@@ -62,14 +44,15 @@ class CreateTableUserDetails extends Migration
             ]
         ]);
         $this->db->disableForeignKeyChecks();
-        $this->forge->addPrimaryKey('user_id');
+        $this->forge->addPrimaryKey('id');
         $this->forge->addForeignKey('user_id', 'users', 'id', '', 'CASCADE');
-        $this->forge->createTable('user_details');
+        $this->forge->addForeignKey('program_code', 'programs', 'code');
+        $this->forge->createTable('student_details');
         $this->db->enableForeignKeyChecks();
     }
 
     public function down(): void
     {
-        $this->forge->dropTable('user_details', true);
+        $this->forge->dropTable('student_details');
     }
 }
