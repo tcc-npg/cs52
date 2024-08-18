@@ -33,6 +33,8 @@ class ProfileController extends BaseController
 
         $redirect = redirect()->back();
 
+        $update_successful_message = null;
+
         if ($validation->withRequest($this->request)->run()) {
             $userDetailsModel = model(UserDetailsModel::class);
 
@@ -45,11 +47,9 @@ class ProfileController extends BaseController
             }
 
             $userDetailsModel->save($userDetails);
-
-        } else {
-            $redirect = $redirect->withInput();
+            $update_successful_message = 'Your profile details has been successfully updated!';
         }
 
-        return $redirect;
+        return $redirect->withInput()->with('update_successful', $update_successful_message);
     }
 }

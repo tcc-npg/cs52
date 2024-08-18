@@ -51,9 +51,8 @@ class Validation extends BaseConfig
             ],
         ],
         'middle_name' => [
-            'rules' => 'max_length[50]|min_length[2]',
+            'rules' => 'max_length[50]',
             'errors' => [
-                'min_length' => 'Your middle name cannot have less than 2 characters.',
                 'max_length' => 'Your middle name cannot have more than 50 characters.',
             ],
         ],

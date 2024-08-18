@@ -2,6 +2,29 @@
 <?= $this->section('pageTitle'); ?>- Dashboard<?= $this->endSection('pageTitle'); ?>
 <?= $this->section('content'); ?>
 <div class="container-xxl flex-grow-1 container-p-y">
+    <div
+            class="bs-toast toast bg-success fade toast-placement-ex m-2 top-0 start-50 translate-middle-x"
+            role="alert"
+            aria-live="assertive"
+            aria-atomic="true"
+            data-delay="2000"
+            id="update_successful_toast"
+    >
+        <div class="toast-header">
+            <i class='bx bxs-check-circle'></i>
+            <div class="me-auto fw-semibold">Success</div>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body"><?= session('update_successful'); ?></div>
+    </div>
+    <?php if (session('update_successful')): ?>
+        <?= $this->section('nonceScript'); ?>
+            <script>
+                const toastPlacement = new bootstrap.Toast(document.querySelector('#update_successful_toast'));
+                toastPlacement.show();
+            </script>
+        <?= $this->endSection('nonceScript'); ?>
+    <?php endif; ?>
     <h4 class="fw-bold py-3 mb-4"><span
                 class="text-muted fw-light">Account <?php if (!$profileIsComplete): ?>/</span> Complete
         Your Profile<?php endif; ?></h4>
@@ -19,7 +42,14 @@
                             'width' => '100',
                             'height' => '100'
                         ]); ?>
-                        <div class="button-wrapper">
+                        <div class="button-wrapper"
+                             data-bs-toggle="tooltip"
+                             data-bs-offset="0,4"
+                             data-bs-placement="top"
+                             data-bs-html="true"
+                             title=""
+                             data-bs-original-title="<i class='bx bxs-x-circle bx-xs'></i> <span>Not yet ready</span>"
+                        >
                             <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
                                 <span class="d-none d-sm-block">Upload new photo</span>
                                 <i class="bx bx-upload d-block d-sm-none"></i>
@@ -29,9 +59,10 @@
                                         class="account-file-input"
                                         hidden
                                         accept="image/png, image/jpeg"
+                                        disabled
                                 >
                             </label>
-                            <button type="button" class="btn btn-outline-secondary account-image-reset mb-4">
+                            <button type="button" disabled class="btn btn-outline-secondary account-image-reset mb-4">
                                 <i class="bx bx-reset d-block d-sm-none"></i>
                                 <span class="d-none d-sm-block">Reset</span>
                             </button>
@@ -47,7 +78,7 @@
                         <div class="mb-3 col-md-4">
                             <label for="first_name" class="form-label required">First Name</label>
                             <input
-                                    class="form-control"
+                                    class="form-control <?= validation_show_error('first_name') ? 'invalid' : ''; ?>"
                                     type="text"
                                     id="first_name"
                                     name="first_name"
@@ -56,23 +87,36 @@
                                     required
                                     value="<?= old('first_name') ?? $userDetails->first_name; ?>"
                             >
+                            <?php if (validation_show_error('first_name')): ?>
+                                <div class="error-msg p-2">
+                                    <small class="text-danger"><i
+                                                class='bx bxs-x-circle bs-xs'></i> <?= validation_show_error('first_name'); ?>
+                                    </small>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <div class="mb-3 col-md-4">
                             <label for="middle_name" class="form-label">Middle Name</label>
                             <input
-                                    class="form-control"
+                                    class="form-control <?= validation_show_error('middle_name') ? 'invalid' : ''; ?>"
                                     type="text"
                                     id="middle_name"
                                     name="middle_name"
                                     placeholder="Middle Name"
                                     value="<?= old('middle_name') ?? $userDetails->middle_name; ?>"
                             >
-
+                            <?php if (validation_show_error('middle_name')): ?>
+                                <div class="error-msg p-2">
+                                    <small class="text-danger"><i
+                                                class='bx bxs-x-circle'></i> <?= validation_show_error('middle_name'); ?>
+                                    </small>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <div class="mb-3 col-md-4">
                             <label for="last_name" class="form-label required">Last Name</label>
                             <input
-                                    class="form-control"
+                                    class="form-control <?= validation_show_error('last_name') ? 'invalid' : ''; ?>"
                                     type="text"
                                     id="last_name"
                                     name="last_name"
@@ -80,6 +124,13 @@
                                     required
                                     value="<?= old('last_name') ?? $userDetails->last_name; ?>"
                             >
+                            <?php if (validation_show_error('last_name')): ?>
+                                <div class="error-msg p-2">
+                                    <small class="text-danger"><i
+                                                class='bx bxs-x-circle'></i> <?= validation_show_error('last_name'); ?>
+                                    </small>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <div class="mb-3 col-md-6">
                             <label class="form-label required" for="address">Address</label>
@@ -87,13 +138,20 @@
                                     type="text"
                                     id="address"
                                     name="address"
-                                    class="form-control"
-                                    max="255"
-                                    min="2"
+                                    class="form-control <?= validation_show_error('address') ? 'invalid' : ''; ?>"
+                                    maxlength="255"
+                                    minlength="2"
                                     placeholder="Your Address"
                                     required
                                     value="<?= old('address') ?? $userDetails->address; ?>"
                             >
+                            <?php if (validation_show_error('address')): ?>
+                                <div class="error-msg p-2">
+                                    <small class="text-danger"><i
+                                                class='bx bxs-x-circle'></i> <?= validation_show_error('address'); ?>
+                                    </small>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <div class="mb-3 col-md-3">
                             <label for="phone_number" class="form-label required">Phone Number</label>
@@ -101,21 +159,29 @@
                                 <span class="input-group-text">+63</span>
                                 <input
                                         type="text"
-                                        class="form-control"
+                                        class="form-control <?= validation_show_error('phone_number') ? 'invalid' : ''; ?>"
                                         placeholder="9123456789"
                                         name="phone_number"
                                         id="phone_number"
                                         oninput="toPhoneOnly(this);"
-                                        min="10"
-                                        max="11"
+                                        minlength="10"
+                                        maxlength="11"
                                         required
                                         value="<?= old('phone_number') ?? $userDetails->phone_number; ?>"
                                 >
+                                <?php if (validation_show_error('phone_number')): ?>
+                                    <div class="error-msg p-2">
+                                        <small class="text-danger"><i
+                                                    class='bx bxs-x-circle'></i> <?= validation_show_error('phone_number'); ?>
+                                        </small>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                         <div class="mb-3 col-md-3">
                             <label for="gender" class="form-label required">Gender</label>
-                            <select class="form-select" id="gender" name="gender" required>
+                            <select class="form-select <?= validation_show_error('gender') ? 'invalid' : ''; ?>"
+                                    id="gender" name="gender" required>
                                 <option selected disabled>Select Gender</option>
                                 <option
                                         value="M"
@@ -130,6 +196,13 @@
                                     Female
                                 </option>
                             </select>
+                            <?php if (validation_show_error('gender')): ?>
+                                <div class="error-msg p-2">
+                                    <small class="text-danger"><i
+                                                class='bx bxs-x-circle'></i> <?= validation_show_error('gender'); ?>
+                                    </small>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -137,20 +210,30 @@
                     <p><small class="text-light fw-semibold">Student Information</small></p>
                     <div class="row">
                         <div class="mb-3 col-md-3">
-                            <label for="student_number" class="form-label required">Student Number</label>
+                            <label for="student_number" class="form-label required z">Student Number</label>
                             <input
-                                    class="form-control"
+                                    class="form-control <?= validation_show_error('student_number') ? 'invalid' : ''; ?>"
                                     type="text"
                                     id="student_number"
                                     name="student_number"
                                     placeholder="Student Number"
                                     required
                                     value="<?= old('student_number') ?? $userDetails->student_number; ?>"
+                                    minlength="10"
+                                    maxlength="10"
                             >
+                            <?php if (validation_show_error('student_number')): ?>
+                                <div class="error-msg p-2">
+                                    <small class="text-danger"><i
+                                                class='bx bxs-x-circle'></i> <?= validation_show_error('student_number'); ?>
+                                    </small>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <div class="mb-3 col-md-3">
                             <label for="year_level" class="form-label required">Year Level</label>
-                            <select class="form-select" id="year_level" name="year_level" required>
+                            <select class="form-select <?= validation_show_error('year_level') ? 'invalid' : ''; ?>"
+                                    id="year_level" name="year_level" required>
                                 <option selected disabled>Select Year Level</option>
                                 <option
                                         value="1"
@@ -177,13 +260,28 @@
                                     4th
                                 </option>
                             </select>
+                            <?php if (validation_show_error('year_level')): ?>
+                                <div class="error-msg p-2">
+                                    <small class="text-danger"><i
+                                                class='bx bxs-x-circle'></i> <?= validation_show_error('year_level'); ?>
+                                    </small>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <div class="mb-3 col-md-6">
                             <label for="program_code" class="form-label required">Program</label>
-                            <select class="form-select" id="program_code" name="program_code" required>
+                            <select class="form-select <?= validation_show_error('program_code') ? 'invalid' : ''; ?>"
+                                    id="program_code" name="program_code" required>
                                 <option disabled>Select Program</option>
                                 <option value="bscs" selected>Bachelor of Science in Computer Science</option>
                             </select>
+                            <?php if (validation_show_error('program_code')): ?>
+                                <div class="error-msg p-2">
+                                    <small class="text-danger"><i
+                                                class='bx bxs-x-circle'></i> <?= validation_show_error('program_code'); ?>
+                                    </small>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -242,8 +340,16 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card-footer pt-0 float-end">
-                        <button type="submit" class="btn btn-primary me-2">Save changes</button>
+                    <div class="card-footer pt-0 float-end"
+                         data-bs-toggle="tooltip"
+                         data-bs-offset="0,4"
+                         data-bs-placement="top"
+                         data-bs-html="true"
+                         title=""
+                         data-bs-original-title="<i class='bx bxs-x-circle bx-xs'></i> <span>Not yet ready</span>">
+                        <button type="submit" class="btn btn-primary me-2"
+                                disabled
+                        >Save changes</button>
                     </div>
                 </form>
             </div>
