@@ -41,7 +41,8 @@ class Validation extends BaseConfig
     // --------------------------------------------------------------------
     // Rules
     // --------------------------------------------------------------------
-    public array $studentProfileDetailsRule = [
+
+    public array $userDetailsRules = [
         'first_name' => [
             'rules' => 'required|max_length[50]|min_length[2]',
             'errors' => [
@@ -87,7 +88,10 @@ class Validation extends BaseConfig
                 'min_length' => 'Your gender cannot have less than 1 character.',
                 'max_length' => 'Your gender cannot have more than 1 character.',
             ],
-        ],
+        ]
+    ];
+
+    public array $studentDetailsRules = [
         'student_number' => [ // todo regex
             'rules' => 'required|max_length[10]|min_length[10]',
             'errors' => [

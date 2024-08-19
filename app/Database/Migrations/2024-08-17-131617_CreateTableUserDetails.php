@@ -45,11 +45,6 @@ class CreateTableUserDetails extends Migration
                 'null' => false,
                 'constraint' => '255',
             ],
-            'user_type' => [
-                'type' => 'enum',
-                'null' => false,
-                'constraint' => ['STU', 'PROF'],
-            ],
             'created_at' => [
                 'type' => 'datetime',
                 'null' => false,

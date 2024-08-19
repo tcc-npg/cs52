@@ -2,31 +2,23 @@
 <?= $this->section('pageTitle'); ?>- Dashboard<?= $this->endSection('pageTitle'); ?>
 <?= $this->section('content'); ?>
 <div class="container-xxl flex-grow-1 container-p-y">
-    <?php if (session('update_successful')): ?>
-        <div
-                class="bs-toast toast bg-<?= session('toast_color') ?> fade toast-placement-ex m-2 top-0 start-50 translate-middle-x"
-                role="alert"
-                aria-live="assertive"
-                aria-atomic="true"
-                data-delay="2000"
-                id="update_successful_toast"
-        >
-            <div class="toast-header">
-                <i class='bx bxs-check-circle'></i>
-                <div class="me-auto fw-semibold">&nbsp;Success</div>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body"><?= session('update_successful'); ?></div>
-        </div>
+    <?php if (session('update_successful')) :
+        $message = session('update_successful');
+        $icon = session('toast_icon');
+        $header = session('toast_header');
+        $type = session('toast_color');
+        echo showToast($message, $type, $header, $icon);
+        ?>
+
         <?= $this->section('nonceScript'); ?>
-            <script>
-                const toastPlacement = new bootstrap.Toast(document.querySelector('#update_successful_toast'));
-                toastPlacement.show();
-            </script>
+        <script>
+            const toastPlacement = new bootstrap.Toast(document.querySelector('#update_successful_toast'));
+            toastPlacement.show();
+        </script>
         <?= $this->endSection('nonceScript'); ?>
     <?php endif; ?>
     <h4 class="fw-bold py-3 mb-4"><span
-                class="text-muted fw-light">Account <?php if (!$profileIsComplete): ?>/</span> Complete
+                class="text-muted fw-light">Account <?php if (!$isProfileComplete): ?>/</span> Complete
         Your Profile<?php endif; ?></h4>
     <div class="row">
         <div class="col-xxl">
@@ -85,7 +77,7 @@
                                     placeholder="First Name"
                                     autofocus
                                     required
-                                    value="<?= old('first_name') ?? $userDetails->first_name; ?>"
+                                    value="<?= old('first_name') ?? $userDetails->first_name ?? ''; ?>"
                             >
                             <?php if (validation_show_error('first_name')): ?>
                                 <div class="error-msg p-2">
@@ -103,7 +95,7 @@
                                     id="middle_name"
                                     name="middle_name"
                                     placeholder="Middle Name"
-                                    value="<?= old('middle_name') ?? $userDetails->middle_name; ?>"
+                                    value="<?= old('middle_name') ?? $userDetails->middle_name ?? ''; ?>"
                             >
                             <?php if (validation_show_error('middle_name')): ?>
                                 <div class="error-msg p-2">
@@ -122,7 +114,7 @@
                                     name="last_name"
                                     placeholder="Last Name"
                                     required
-                                    value="<?= old('last_name') ?? $userDetails->last_name; ?>"
+                                    value="<?= old('last_name') ?? $userDetails->last_name ?? ''; ?>"
                             >
                             <?php if (validation_show_error('last_name')): ?>
                                 <div class="error-msg p-2">
@@ -143,7 +135,7 @@
                                     minlength="2"
                                     placeholder="Your Address"
                                     required
-                                    value="<?= old('address') ?? $userDetails->address; ?>"
+                                    value="<?= old('address') ?? $userDetails->address ?? ''; ?>"
                             >
                             <?php if (validation_show_error('address')): ?>
                                 <div class="error-msg p-2">
@@ -167,7 +159,7 @@
                                         minlength="10"
                                         maxlength="11"
                                         required
-                                        value="<?= old('phone_number') ?? $userDetails->phone_number; ?>"
+                                        value="<?= old('phone_number') ?? $userDetails->phone_number ?? ''; ?>"
                                 >
                                 <?php if (validation_show_error('phone_number')): ?>
                                     <div class="error-msg p-2">
@@ -185,13 +177,13 @@
                                 <option selected disabled>Select Gender</option>
                                 <option
                                         value="M"
-                                    <?= (!is_null(old('gender')) && old('gender') === 'M') ? 'selected' : (($userDetails->gender === 'M') ? 'selected' : ''); ?>
+                                    <?= (!is_null(old('gender')) && old('gender') === 'M') ? 'selected' : ((($userDetails->gender ?? '') === 'M') ? 'selected' : ''); ?>
                                 >
                                     Male
                                 </option>
                                 <option
                                         value="F"
-                                    <?= (!is_null(old('gender')) && old('gender') === 'F') ? 'selected' : (($userDetails->gender === 'F') ? 'selected' : ''); ?>
+                                    <?= (!is_null(old('gender')) && old('gender') === 'F') ? 'selected' : ((($userDetails->gender ?? '') === 'F') ? 'selected' : ''); ?>
                                 >
                                     Female
                                 </option>
@@ -206,88 +198,90 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-body pt-0">
-                    <p><small class="text-light fw-semibold">Student Information</small></p>
-                    <div class="row">
-                        <div class="mb-3 col-md-3">
-                            <label for="student_number" class="form-label required z">Student Number</label>
-                            <input
-                                    class="form-control <?= validation_show_error('student_number') ? 'invalid' : ''; ?>"
-                                    type="text"
-                                    id="student_number"
-                                    name="student_number"
-                                    placeholder="Student Number"
-                                    required
-                                    value="<?= old('student_number') ?? $userDetails->student_number; ?>"
-                                    minlength="10"
-                                    maxlength="10"
-                            >
-                            <?php if (validation_show_error('student_number')): ?>
-                                <div class="error-msg p-2">
-                                    <small class="text-danger"><i
-                                                class='bx bxs-x-circle'></i> <?= validation_show_error('student_number'); ?>
-                                    </small>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                        <div class="mb-3 col-md-3">
-                            <label for="year_level" class="form-label required">Year Level</label>
-                            <select class="form-select <?= validation_show_error('year_level') ? 'invalid' : ''; ?>"
-                                    id="year_level" name="year_level" required>
-                                <option selected disabled>Select Year Level</option>
-                                <option
-                                        value="1"
-                                    <?= (!is_null(old('year_level')) && old('year_level') === '1') ? 'selected' : (($userDetails->year_level === '1') ? 'selected' : ''); ?>
+                <?php if (auth()->user()->inGroup('student')): ?>
+                    <div class="card-body pt-0">
+                        <p><small class="text-light fw-semibold">Student Information</small></p>
+                        <div class="row">
+                            <div class="mb-3 col-md-3">
+                                <label for="student_number" class="form-label required z">Student Number</label>
+                                <input
+                                        class="form-control <?= validation_show_error('student_number') ? 'invalid' : ''; ?>"
+                                        type="text"
+                                        id="student_number"
+                                        name="student_number"
+                                        placeholder="Student Number"
+                                        required
+                                        value="<?= old('student_number') ?? $studentDetails->student_number ?? ''; ?>"
+                                        minlength="10"
+                                        maxlength="10"
                                 >
-                                    1st
-                                </option>
-                                <option
-                                        value="2"
-                                    <?= (!is_null(old('year_level')) && old('year_level') === '2') ? 'selected' : (($userDetails->year_level === '2') ? 'selected' : ''); ?>
-                                >
-                                    2nd
-                                </option>
-                                <option
-                                        value="3"
-                                    <?= (!is_null(old('year_level')) && old('year_level') === '3') ? 'selected' : (($userDetails->year_level === '3') ? 'selected' : ''); ?>
-                                >
-                                    3rd
-                                </option>
-                                <option
-                                        value="4"
-                                    <?= (!is_null(old('year_level')) && old('year_level') === '4') ? 'selected' : (($userDetails->year_level === '4') ? 'selected' : ''); ?>
-                                >
-                                    4th
-                                </option>
-                            </select>
-                            <?php if (validation_show_error('year_level')): ?>
-                                <div class="error-msg p-2">
-                                    <small class="text-danger"><i
-                                                class='bx bxs-x-circle'></i> <?= validation_show_error('year_level'); ?>
-                                    </small>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                        <div class="mb-3 col-md-6">
-                            <label for="program_code" class="form-label required">Program</label>
-                            <select class="form-select <?= validation_show_error('program_code') ? 'invalid' : ''; ?>"
-                                    id="program_code" name="program_code" required>
-                                <option disabled>Select Program</option>
-                                <option value="bscs" selected>Bachelor of Science in Computer Science</option>
-                            </select>
-                            <?php if (validation_show_error('program_code')): ?>
-                                <div class="error-msg p-2">
-                                    <small class="text-danger"><i
-                                                class='bx bxs-x-circle'></i> <?= validation_show_error('program_code'); ?>
-                                    </small>
-                                </div>
-                            <?php endif; ?>
+                                <?php if (validation_show_error('student_number')): ?>
+                                    <div class="error-msg p-2">
+                                        <small class="text-danger"><i
+                                                    class='bx bxs-x-circle'></i> <?= validation_show_error('student_number'); ?>
+                                        </small>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="mb-3 col-md-3">
+                                <label for="year_level" class="form-label required">Year Level</label>
+                                <select class="form-select <?= validation_show_error('year_level') ? 'invalid' : ''; ?>"
+                                        id="year_level" name="year_level" required>
+                                    <option selected disabled>Select Year Level</option>
+                                    <option
+                                            value="1"
+                                        <?= (!is_null(old('year_level')) && old('year_level') === '1') ? 'selected' : ((($studentDetails->year_level ?? '') === '1') ? 'selected' : ''); ?>
+                                    >
+                                        1st
+                                    </option>
+                                    <option
+                                            value="2"
+                                        <?= (!is_null(old('year_level')) && old('year_level') === '2') ? 'selected' : (($studentDetails->year_level ?? '') ? 'selected' : ''); ?>
+                                    >
+                                        2nd
+                                    </option>
+                                    <option
+                                            value="3"
+                                        <?= (!is_null(old('year_level')) && old('year_level') === '3') ? 'selected' : (($studentDetails->year_level ?? '') ? 'selected' : ''); ?>
+                                    >
+                                        3rd
+                                    </option>
+                                    <option
+                                            value="4"
+                                        <?= (!is_null(old('year_level')) && old('year_level') === '4') ? 'selected' : (($studentDetails->year_level ?? '') ? 'selected' : ''); ?>
+                                    >
+                                        4th
+                                    </option>
+                                </select>
+                                <?php if (validation_show_error('year_level')): ?>
+                                    <div class="error-msg p-2">
+                                        <small class="text-danger"><i
+                                                    class='bx bxs-x-circle'></i> <?= validation_show_error('year_level'); ?>
+                                        </small>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="mb-3 col-md-6">
+                                <label for="program_code" class="form-label required">Program</label>
+                                <select class="form-select <?= validation_show_error('program_code') ? 'invalid' : ''; ?>"
+                                        id="program_code" name="program_code" required>
+                                    <option disabled>Select Program</option>
+                                    <option value="bscs" selected>Bachelor of Science in Computer Science</option>
+                                </select>
+                                <?php if (validation_show_error('program_code')): ?>
+                                    <div class="error-msg p-2">
+                                        <small class="text-danger"><i
+                                                    class='bx bxs-x-circle'></i> <?= validation_show_error('program_code'); ?>
+                                        </small>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="card-footer pt-0 float-end">
-                    <button type="submit" class="btn btn-primary me-2">Save changes</button>
-                </div>
+                    <div class="card-footer pt-0 float-end">
+                        <button type="submit" class="btn btn-primary me-2">Save changes</button>
+                    </div>
+                <?php endif; ?>
                 <?= form_close(); ?>
                 <form action="">
                     <hr class="m-0">
@@ -305,7 +299,7 @@
                                             placeholder="Email"
                                             autofocus
                                             required
-                                            value="<?= auth()->user()->getEmail() ?>"
+                                            value="<?= auth()->user()->getEmail(); ?>"
                                             disabled
                                     >
                                 </div>
@@ -349,7 +343,8 @@
                          data-bs-original-title="<i class='bx bxs-x-circle bx-xs'></i> <span>Not yet ready</span>">
                         <button type="submit" class="btn btn-primary me-2"
                                 disabled
-                        >Save changes</button>
+                        >Save changes
+                        </button>
                     </div>
                 </form>
             </div>

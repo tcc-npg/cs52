@@ -42,9 +42,11 @@ class CreateTablePrograms extends Migration
                 'unsigned' => true,
             ]
         ]);
+        $this->db->disableForeignKeyChecks();
         $this->forge->addPrimaryKey('code');
         $this->forge->addForeignKey('deleted_by', 'users', 'id');
         $this->forge->createTable('programs');
+        $this->db->enableForeignKeyChecks();
     }
 
     public function down(): void

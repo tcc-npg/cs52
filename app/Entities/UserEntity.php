@@ -8,14 +8,21 @@ class UserEntity extends User
 {
     private ?UserDetailsEntity $userDetails = null;
 
-    public function __construct(?array $data = null)
-    {
-        parent::__construct($data);
-    }
+    private ?StudentDetailsEntity $studentDetails = null;
 
     public function getUserDetails(): ?UserDetailsEntity
     {
         return $this->userDetails;
+    }
+
+    public function getStudentDetails(): ?StudentDetailsEntity
+    {
+        return $this->studentDetails;
+    }
+
+    public function isProfileComplete(): bool
+    {
+        return !is_null($this->userDetails);
     }
 
     public function setUserDetails(?UserDetailsEntity $userDetails): void
@@ -23,7 +30,8 @@ class UserEntity extends User
         $this->userDetails = $userDetails;
     }
 
-    public function isProfileComplete(): bool {
-        return !is_null($this->userDetails);
+    public function setStudentDetails(?StudentDetailsEntity $studentDetails): void
+    {
+        $this->studentDetails = $studentDetails;
     }
 }

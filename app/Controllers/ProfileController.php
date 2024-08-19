@@ -2,7 +2,9 @@
 
 namespace App\Controllers;
 
+use App\Entities\StudentDetailsEntity;
 use App\Entities\UserDetailsEntity;
+use App\Models\StudentDetailsModel;
 use App\Models\UserDetailsModel;
 use CodeIgniter\HTTP\RedirectResponse;
 use ReflectionException;
@@ -13,12 +15,16 @@ class ProfileController extends BaseController
 
     public function index(): string
     {
-        $userDetails = $this->user->getUserDetails();
-
+        helper('_toast');
+        $studentDetails = null;
+        if ($this->user->inGroup('student')) {
+            $studentDetails = $this->user->getStudentDetails();
+        }
         return view('user/profile', [
-            'userDetails' => $userDetails,
+            'userDetails' => $this->user->getUserDetails(),
+            'studentDetails' => $studentDetails,
             'userId' => $this->user->id,
-            'profileIsComplete' => $userDetails->isProfileComplete()
+            'isProfileComplete' => $this->user->isProfileComplete()
         ]);
     }
 
@@ -29,45 +35,72 @@ class ProfileController extends BaseController
     {
         $validation = service('validation');
 
-        $validation->setRuleGroup('studentProfileDetailsRule');
-
         $redirect = redirect()->back();
 
-        $updateSuccessMessage = null;
-        $toastColor = 'info';
+        $validation->setRuleGroup('userDetailsRules');
+        $validation1 = $validation->withRequest($this->request)->run();
+        $validated1 = $validation->getValidated();
 
-        if ($validation->withRequest($this->request)->run()) {
+        $validation->setRuleGroup('studentDetailsRules');
+        $validation2 = $validation->withRequest($this->request)->run();
+        $validated2 = $validation->getValidated();
+
+        $updateSuccessMessage = 'No changes were made.';
+        $toastColor = 'info';
+        $toastIcon = 'bxs-info-circle';
+        $toastHeader = 'Info';
+
+        if ($validation2 && $validation1) {
             $userDetailsModel = model(UserDetailsModel::class);
+            $studentDetailsModel = model(StudentDetailsModel::class);
 
             $userDetails = new UserDetailsEntity();
-            $userDetails->fill($validation->getValidated());
+            $userDetails = $userDetails->fill($validated1);
+            $userDetails->user_id = $userId;
 
-            $updateSuccessMessage = 'No changes were made.';
-            if ($this->userDetailsHasChanges($userDetails)) {
-                $userDetails->user_id = $userId;
+            $studentDetails = new StudentDetailsEntity();
+            $studentDetails = $studentDetails->fill($validated2);
+            $studentDetails->user_id = $userId;
 
-                if (!$this->request->getPost('user_type')) {
-                    $userDetails->user_type = STUDENT;
+            if (!$this->user->isProfileComplete() ||
+                (
+                    $this->userDetailsHasChanges($validated1, $this->user->getUserDetails()->toArray())
+                    ||
+                    $this->userDetailsHasChanges($validated2, $this->user->getStudentDetails()->toArray())
+                )
+            ) {
+                $userDetailsSaved = $userDetailsModel->save($userDetails);
+                $studentDetailsSaved = $studentDetailsModel->save($studentDetails);
+                if ($userDetailsSaved && $studentDetailsSaved) {
+                    $updateSuccessMessage = 'Your profile details has been successfully updated!';
+                    $toastHeader = 'Success';
+                    $toastColor = 'success';
+                    $toastIcon = 'bxs-check-circle';
+                } else {
+                    $updateSuccessMessage = 'An error was encountered while updating your profile details.';
+                    $toastHeader = 'Error';
+                    $toastColor = 'danger';
+                    $toastIcon = 'bxs-x-circle';
                 }
-                $userDetailsModel->save($userDetails);
-                $updateSuccessMessage = 'Your profile details has been successfully updated!';
-                $toastColor = 'success';
             }
         }
 
         return $redirect->withInput()
             ->with('update_successful', $updateSuccessMessage)
-            ->with('toast_color', $toastColor);
+            ->with('toast_color', $toastColor)
+            ->with('toast_icon', $toastIcon)
+            ->with('toast_header', $toastHeader);
     }
 
     // TODO convert to helper method
-    private function userDetailsHasChanges(UserDetailsEntity $userDetails): bool
+    private function userDetailsHasChanges(array $array1, array $array2): bool
     {
-        $userDetailsOrig = $this->user->getUserDetails()->toArray();
-        $keys = array_keys($userDetailsOrig);
-        for ($i = 0; $i < count($userDetailsOrig); $i++) {
-            if (!in_array($keys[$i], ['user_id', 'created_at', 'updated_at', 'user_type'])) {
-                if ($userDetailsOrig[$keys[$i]] != $userDetails->{$keys[$i]}) return true;
+        $keys = array_keys($array1);
+        for ($i = 0; $i < count($array1); $i++) {
+            if (!in_array($keys[$i], ['user_id', 'created_at', 'updated_at'])) {
+                if ($array1[$keys[$i]] !== $array2[$keys[$i]]) {
+                    return true;
+                }
             }
         }
         return false;
