@@ -4,7 +4,7 @@
 <div class="container-xxl flex-grow-1 container-p-y">
     <?php if (session('update_successful')): ?>
         <div
-                class="bs-toast toast bg-success fade toast-placement-ex m-2 top-0 start-50 translate-middle-x"
+                class="bs-toast toast bg-<?= session('toast_color') ?> fade toast-placement-ex m-2 top-0 start-50 translate-middle-x"
                 role="alert"
                 aria-live="assertive"
                 aria-atomic="true"

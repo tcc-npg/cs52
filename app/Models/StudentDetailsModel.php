@@ -17,5 +17,6 @@ class StudentDetailsModel extends Model
         'student_number',
         'year_level',
         'program_code',
+        'updated_at'
     ];
 }

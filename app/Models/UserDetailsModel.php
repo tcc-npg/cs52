@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Entities\StudentDetailsEntity;
 use App\Entities\UserDetailsEntity;
 use CodeIgniter\Model;
+use Exception;
 use ReflectionException;
 
 class UserDetailsModel extends Model
@@ -23,7 +24,8 @@ class UserDetailsModel extends Model
         'gender',
         'phone_number',
         'address',
-        'user_type'
+        'user_type',
+        'updated_at'
     ];
 
     protected $beforeInsert = ['saveStudentDetails'];
@@ -58,11 +60,14 @@ class UserDetailsModel extends Model
     {
         $this->tempUserDetails = clone $row;
 
+        $row->updated_at = date('Y-m-d H:i:s');
+
         return parent::update($id, $row);
     }
 
     /**
      * @throws ReflectionException
+     * @throws Exception
      */
     protected function saveStudentDetails(array $data): array
     {
@@ -79,6 +84,7 @@ class UserDetailsModel extends Model
         if (!$studentDetailsModel->find($studentDetails->user_id)) {
             $studentDetailsModel->insert($studentDetails);
         } else {
+            $studentDetails->updated_at = date('Y-m-d H:i:s');
             $studentDetailsModel->save($studentDetails);
         }
 

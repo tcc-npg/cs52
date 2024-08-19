@@ -19,7 +19,9 @@ class UserDetailsEntity extends Entity
         'gender' => null,
         'phone_number' => null,
         'address' => null,
-        'user_type' => null
+        'user_type' => null,
+        'created_at' => null,
+        'updated_at' => null,
     ];
 
     protected $dates = [

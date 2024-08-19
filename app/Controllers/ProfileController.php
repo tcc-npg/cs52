@@ -33,23 +33,43 @@ class ProfileController extends BaseController
 
         $redirect = redirect()->back();
 
-        $update_successful_message = null;
+        $updateSuccessMessage = null;
+        $toastColor = 'info';
 
         if ($validation->withRequest($this->request)->run()) {
             $userDetailsModel = model(UserDetailsModel::class);
 
             $userDetails = new UserDetailsEntity();
             $userDetails->fill($validation->getValidated());
-            $userDetails->user_id = $userId;
 
-            if (!$this->request->getPost('user_type')) {
-                $userDetails->user_type = STUDENT;
+            $updateSuccessMessage = 'No changes were made.';
+            if (!$this->checkIfUserDetailsHasChanges($userDetails)) {
+                $userDetails->user_id = $userId;
+
+                if (!$this->request->getPost('user_type')) {
+                    $userDetails->user_type = STUDENT;
+                }
+                $userDetailsModel->save($userDetails);
+                $updateSuccessMessage = 'Your profile details has been successfully updated!';
+                $toastColor = 'success';
             }
-
-            $userDetailsModel->save($userDetails);
-            $update_successful_message = 'Your profile details has been successfully updated!';
         }
 
-        return $redirect->withInput()->with('update_successful', $update_successful_message);
+        return $redirect->withInput()
+            ->with('update_successful', $updateSuccessMessage)
+            ->with('toast_color', $toastColor);
+    }
+
+    // TODO convert to helper method
+    private function checkIfUserDetailsHasChanges(UserDetailsEntity $userDetails): bool
+    {
+        $userDetailsOrig = $this->user->getUserDetails()->toArray();
+        $keys = array_keys($userDetailsOrig);
+        for ($i = 0; $i < count($userDetailsOrig); $i++) {
+            if (!in_array($keys[$i], ['user_id', 'created_at', 'updated_at', 'user_type'])) {
+                if ($userDetailsOrig[$keys[$i]] != $userDetails->{$keys[$i]}) return false;
+            }
+        }
+        return true;
     }
 }
