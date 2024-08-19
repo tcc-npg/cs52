@@ -43,7 +43,7 @@ class ProfileController extends BaseController
             $userDetails->fill($validation->getValidated());
 
             $updateSuccessMessage = 'No changes were made.';
-            if (!$this->checkIfUserDetailsHasChanges($userDetails)) {
+            if ($this->userDetailsHasChanges($userDetails)) {
                 $userDetails->user_id = $userId;
 
                 if (!$this->request->getPost('user_type')) {
@@ -61,15 +61,15 @@ class ProfileController extends BaseController
     }
 
     // TODO convert to helper method
-    private function checkIfUserDetailsHasChanges(UserDetailsEntity $userDetails): bool
+    private function userDetailsHasChanges(UserDetailsEntity $userDetails): bool
     {
         $userDetailsOrig = $this->user->getUserDetails()->toArray();
         $keys = array_keys($userDetailsOrig);
         for ($i = 0; $i < count($userDetailsOrig); $i++) {
             if (!in_array($keys[$i], ['user_id', 'created_at', 'updated_at', 'user_type'])) {
-                if ($userDetailsOrig[$keys[$i]] != $userDetails->{$keys[$i]}) return false;
+                if ($userDetailsOrig[$keys[$i]] != $userDetails->{$keys[$i]}) return true;
             }
         }
-        return true;
+        return false;
     }
 }
