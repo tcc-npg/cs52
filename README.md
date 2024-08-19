@@ -59,6 +59,7 @@ Download and install the following:
 9. Migrate the database tables:
    ```shell
    php spark migrate --all
+   php spark db:seed ProgramsSeeder
    ```
 
 10. Run the app:

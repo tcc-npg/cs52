@@ -9,7 +9,7 @@ class ProgramsSeeder extends Seeder
     public function run()
     {
         $data = [
-            'code' => 'bscswsx',
+            'code' => 'bscs',
             'name'    => 'Bachelor of Science in Computer Science',
         ];
         $this->db->table('programs')->insert($data);
