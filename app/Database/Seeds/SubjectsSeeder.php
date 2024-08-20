@@ -33,9 +33,7 @@ class SubjectsSeeder extends Seeder
         foreach ($csv as $rowData) {
             if (!empty($rowData) && !str_contains($rowData, $headerIndicator)) {
                 $row = explode(',', $rowData);
-                if (strtolower(trim($row[0])) !== $headerIndicator) {
-                    $data[] = [...$this->buildData($row, $currentYearLevel, $currentSemester)];
-                }
+                $data[] = [...$this->buildData($row, $currentYearLevel, $currentSemester)];
             }
         }
 
@@ -52,6 +50,7 @@ class SubjectsSeeder extends Seeder
         $name = humanize($row[3]);
         $units = $row[4];
 
+        // TODO check db for the values below if correct
         $currentYearLevel = $yearLevel;
         $currentSemester = $semester;
 
