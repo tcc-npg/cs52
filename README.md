@@ -60,6 +60,7 @@ Download and install the following:
    ```shell
    php spark migrate --all
    php spark db:seed ProgramsSeeder
+   php spark db:seed CoursesSeeder
    ```
 
 10. Run the app:
