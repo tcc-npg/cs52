@@ -13,11 +13,31 @@
 
     <ul class="menu-inner py-1">
         <!-- Dashboard -->
-        <li class="menu-item active">
+        <li class="menu-item <?= url_is('/') ? 'active' : ''; ?>">
             <a href="<?= base_url('/'); ?>" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-home-circle"></i>
-                <div data-i18n="Analytics">Dashboard</div>
+                <div>Dashboard</div>
             </a>
+        </li>
+
+        <!-- Account -->
+        <li class="menu-item <?= url_is('user*') ? 'open' : ''; ?>">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-dock-top"></i>
+                <div>Account</div>
+            </a>
+            <ul class="menu-sub">
+                <li class="menu-item <?= url_is('user') ? 'active' : ''; ?>">
+                    <a href="<?= url_to('user.index'); ?>" class="menu-link">
+                        <div>Profile</div>
+                    </a>
+                </li>
+                <li class="menu-item <?= url_is('user/subjects-enrolled') ? 'active' : ''; ?>">
+                    <a href="<?= url_to('user.subjects-enrolled'); ?>" class="menu-link">
+                        <div>My Subjects</div>
+                    </a>
+                </li>
+            </ul>
         </li>
 
         <!-- Academic Resources -->
@@ -27,19 +47,19 @@
         <li class="menu-item">
             <a href="javascript:void(0);" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-book"></i>
-                <div data-i18n="Basic">Library</div>
+                <div>Library</div>
             </a>
         </li>
         <li class="menu-item">
             <a href="javascript:void(0);" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-chat"></i>
-                <div data-i18n="Basic">Forum</div>
+                <div>Forum</div>
             </a>
         </li>
         <li class="menu-item">
             <a href="javascript:void(0);" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Flashcards</div>
+                <div>Flashcards</div>
             </a>
         </li>
     </ul>

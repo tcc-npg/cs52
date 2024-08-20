@@ -24,7 +24,7 @@
         <div class="col-xxl">
             <div class="card mb-4">
                 <h5 class="card-header">Profile Details</h5>
-                <?= form_open(url_to('ProfileController::update', $userId)) ?>
+                <?= form_open(url_to('user.update', $userId)) ?>
                 <div class="card-body">
                     <div class="d-flex align-items-start align-items-sm-center gap-4">
                         <?= img([

@@ -5,11 +5,12 @@ namespace App\Controllers;
 use App\Entities\StudentDetailsEntity;
 use App\Entities\UserDetailsEntity;
 use App\Models\StudentDetailsModel;
+use App\Models\SubjectModel;
 use App\Models\UserDetailsModel;
 use CodeIgniter\HTTP\RedirectResponse;
 use ReflectionException;
 
-class ProfileController extends BaseController
+class UserController extends BaseController
 {
     protected $helpers = ['form'];
 
@@ -25,6 +26,15 @@ class ProfileController extends BaseController
             'studentDetails' => $studentDetails,
             'userId' => $this->user->id,
             'isProfileComplete' => $this->user->isProfileComplete()
+        ]);
+    }
+
+    public function subjectsEnrolled(): string
+    {
+        $subjectsModel = model(SubjectModel::class);
+        $subjects = $subjectsModel->getSubjectsForYearAndSemester($this->user->getStudentDetails()->year_level, 1);
+        return view('user/student/subjects-enrolled.php', [
+            'subjects' => $subjects,
         ]);
     }
 

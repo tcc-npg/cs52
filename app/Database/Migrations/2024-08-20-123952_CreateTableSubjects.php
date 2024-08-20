@@ -5,7 +5,7 @@ namespace App\Database\Migrations;
 use CodeIgniter\Database\Migration;
 use CodeIgniter\Database\RawSql;
 
-class CreateTableCourses extends Migration
+class CreateTableSubjects extends Migration
 {
     public function up(): void
     {
@@ -63,11 +63,11 @@ class CreateTableCourses extends Migration
         ]);
         $this->forge->addPrimaryKey('id');
         $this->forge->addUniqueKey('code');
-        $this->forge->createTable('courses');
+        $this->forge->createTable('subjects');
     }
 
     public function down(): void
     {
-        $this->forge->dropTable('courses');
+        $this->forge->dropTable('subjects');
     }
 }

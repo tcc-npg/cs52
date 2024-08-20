@@ -11,7 +11,7 @@ class NewAccountFilter implements FilterInterface
     public function before(RequestInterface $request, $arguments = null)
     {
         if (!(auth()->user()->isProfileComplete())) {
-            return redirect()->route('profile.index');
+            return redirect()->route('user.index');
         }
     }
 

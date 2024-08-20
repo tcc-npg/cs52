@@ -7,7 +7,7 @@ use CodeIgniter\Database\Seeder;
 use CodeIgniter\Files\File;
 use Config\Database;
 
-class CoursesSeeder extends Seeder
+class SubjectsSeeder extends Seeder
 {
 
     public function __construct(Database $config, ?BaseConnection $db = null)
@@ -18,7 +18,7 @@ class CoursesSeeder extends Seeder
 
     public function run(): void
     {
-        $this->db->table('courses')->insertBatch($this->getData());
+        $this->db->table('subjects')->insertBatch($this->getData());
     }
 
     private function getData(): array
@@ -27,13 +27,14 @@ class CoursesSeeder extends Seeder
         $csv = $file->openFile();
         $headerIndicator = 'Year';
         $data = [];
-        $current = null;
+        $currentYearLevel = null;
+        $currentSemester = null;
 
         foreach ($csv as $rowData) {
             if (!empty($rowData) && !str_contains($rowData, $headerIndicator)) {
                 $row = explode(',', $rowData);
                 if (strtolower(trim($row[0])) !== $headerIndicator) {
-                    $data[] = [...$this->buildData($row, $current)];
+                    $data[] = [...$this->buildData($row, $currentYearLevel, $currentSemester)];
                 }
             }
         }
@@ -41,17 +42,18 @@ class CoursesSeeder extends Seeder
         return $data;
     }
 
-    private function buildData(array $row, &$current): array
+    private function buildData(array $row, &$currentYearLevel, &$currentSemester): array
     {
         if (count($row) < 1) return [];
 
-        $yearLevel = $row[0] == '' ? $current : $row[0];
-        $semester = $row[1];
+        $yearLevel = $row[0] == '' ? $currentYearLevel : $row[0];
+        $semester = $row[1] == '' ? $currentSemester : $row[1];;
         $code = $row[2];
         $name = humanize($row[3]);
         $units = $row[4];
 
-        $current = $yearLevel;
+        $currentYearLevel = $yearLevel;
+        $currentSemester = $semester;
 
         return [
             'year_level' => $yearLevel,

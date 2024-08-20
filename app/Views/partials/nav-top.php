@@ -49,7 +49,7 @@
                         <div class="dropdown-divider"></div>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="<?= url_to('profile.index') ?>">
+                        <a class="dropdown-item" href="<?= url_to('user.index') ?>">
                             <i class="bx bx-user me-2"></i>
                             <span class="align-middle">Profile</span>
                         </a>
