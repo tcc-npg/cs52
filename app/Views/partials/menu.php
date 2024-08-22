@@ -32,11 +32,13 @@
                         <div>Profile</div>
                     </a>
                 </li>
-                <li class="menu-item <?= url_is('user/subjects-enrolled') ? 'active' : ''; ?>">
-                    <a href="<?= url_to('user.subjects-enrolled'); ?>" class="menu-link">
-                        <div>My Subjects</div>
-                    </a>
-                </li>
+                <?php if (auth()->user()->inGroup('student')) : ?>
+                    <li class="menu-item <?= url_is('user/subjects-enrolled') ? 'active' : ''; ?>">
+                        <a href="<?= url_to('user.subjects-enrolled'); ?>" class="menu-link">
+                            <div>My Subjects</div>
+                        </a>
+                    </li>
+                <?php endif; ?>
             </ul>
         </li>
 
