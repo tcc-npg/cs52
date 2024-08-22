@@ -24,7 +24,10 @@
         <div class="col-xxl">
             <div class="card mb-4">
                 <h5 class="card-header">Profile Details</h5>
-                <?= form_open(url_to('user.update', $userId)) ?>
+                <?= form_open(url_to('user.update', $userId)); ?>
+                <?php if($belongsToStudentGroup == 'true') : ?>
+                    <?= form_hidden('is_student', $belongsToStudentGroup); ?>
+                <?php endif; ?>
                 <div class="card-body">
                     <div class="d-flex align-items-start align-items-sm-center gap-4">
                         <?= img([
@@ -198,7 +201,7 @@
                         </div>
                     </div>
                 </div>
-                <?php if (auth()->user()->inGroup('student')): ?>
+                <?php if ($belongsToStudentGroup == 'true'): ?>
                     <div class="card-body pt-0">
                         <p><small class="text-light fw-semibold">Student Information</small></p>
                         <div class="row">
@@ -230,25 +233,25 @@
                                     <option selected disabled>Select Year Level</option>
                                     <option
                                             value="1"
-                                        <?= (!is_null(old('year_level')) && old('year_level') === '1') ? 'selected' : ((($studentDetails->year_level ?? '') === '1') ? 'selected' : ''); ?>
+                                        <?= (!is_null(old('year_level')) && old('year_level') === '1') ? 'selected' : ((($studentDetails->year_level ?? '') == '1') ? 'selected' : ''); ?>
                                     >
                                         1st
                                     </option>
                                     <option
                                             value="2"
-                                        <?= (!is_null(old('year_level')) && old('year_level') === '2') ? 'selected' : (($studentDetails->year_level ?? '') ? 'selected' : ''); ?>
+                                        <?= (!is_null(old('year_level')) && old('year_level') === '2') ? 'selected' : ((($studentDetails->year_level ?? '') == '2') ? 'selected' : ''); ?>
                                     >
                                         2nd
                                     </option>
                                     <option
                                             value="3"
-                                        <?= (!is_null(old('year_level')) && old('year_level') === '3') ? 'selected' : (($studentDetails->year_level ?? '') ? 'selected' : ''); ?>
+                                        <?= (!is_null(old('year_level')) && old('year_level') === '3') ? 'selected' : ((($studentDetails->year_level ?? '') == '3') ? 'selected' : ''); ?>
                                     >
                                         3rd
                                     </option>
                                     <option
                                             value="4"
-                                        <?= (!is_null(old('year_level')) && old('year_level') === '4') ? 'selected' : (($studentDetails->year_level ?? '') ? 'selected' : ''); ?>
+                                        <?= (!is_null(old('year_level')) && old('year_level') === '4') ? 'selected' : ((($studentDetails->year_level ?? '') == '4') ? 'selected' : ''); ?>
                                     >
                                         4th
                                     </option>
@@ -278,10 +281,10 @@
                             </div>
                         </div>
                     </div>
+                <?php endif; ?>
                     <div class="card-footer pt-0 float-end">
                         <button type="submit" class="btn btn-primary me-2">Save changes</button>
                     </div>
-                <?php endif; ?>
                 <?= form_close(); ?>
                 <form action="">
                     <hr class="m-0">

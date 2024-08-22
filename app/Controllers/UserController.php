@@ -4,10 +4,12 @@ namespace App\Controllers;
 
 use App\Entities\StudentDetailsEntity;
 use App\Entities\UserDetailsEntity;
+use App\Models\SettingsModel;
 use App\Models\StudentDetailsModel;
 use App\Models\SubjectModel;
 use App\Models\UserDetailsModel;
 use CodeIgniter\HTTP\RedirectResponse;
+use CodeIgniter\Validation\Validation;
 use ReflectionException;
 
 class UserController extends BaseController
@@ -25,6 +27,7 @@ class UserController extends BaseController
             'userDetails' => $this->user->getUserDetails(),
             'studentDetails' => $studentDetails,
             'userId' => $this->user->id,
+            'belongsToStudentGroup' => $this->user->inGroup('student') ? 'true' : 'false',
             'isProfileComplete' => $this->user->isProfileComplete()
         ]);
     }
@@ -32,7 +35,8 @@ class UserController extends BaseController
     public function subjectsEnrolled(): string
     {
         $subjectsModel = model(SubjectModel::class);
-        $subjects = $subjectsModel->getSubjectsForYearAndSemester($this->user->getStudentDetails()->year_level, 1);
+        $settingsModel = model(SettingsModel::class);
+        $subjects = $subjectsModel->getSubjectsForYearAndSemester($this->user->getStudentDetails()->year_level, $settingsModel->findByKey('current_sem')->value);
         return view('user/student/subjects-enrolled.php', [
             'subjects' => $subjects,
         ]);
@@ -43,56 +47,87 @@ class UserController extends BaseController
      */
     public function update(int $userId): RedirectResponse
     {
+        /** @var Validation $validation */
         $validation = service('validation');
-
         $redirect = redirect()->back();
-
-        $validation->setRuleGroup('userDetailsRules');
-        $validation1 = $validation->withRequest($this->request)->run();
-        $validated1 = $validation->getValidated();
-
-        $validation->setRuleGroup('studentDetailsRules');
-        $validation2 = $validation->withRequest($this->request)->run();
-        $validated2 = $validation->getValidated();
-
-        $updateSuccessMessage = 'No changes were made.';
-        $toastColor = 'info';
+        $isStudent = $this->request->getVar('is_student');
+        $studentDetailsValidatedData = [];
+        $studentDetailsModel = [];
         $toastIcon = 'bxs-info-circle';
-        $toastHeader = 'Info';
 
-        if ($validation2 && $validation1) {
-            $userDetailsModel = model(UserDetailsModel::class);
+        // validate user details
+        $userDetailsValidatedData = $this->validateDetails($validation, 'userDetailsRules');
+        $userDetailsModel = model(UserDetailsModel::class);
+
+        // if student, validate as well and then load the model
+        if ($isStudent) {
+            $studentDetailsValidatedData = $this->validateDetails($validation, 'studentDetailsRules');
             $studentDetailsModel = model(StudentDetailsModel::class);
+        }
 
-            $userDetails = new UserDetailsEntity();
-            $userDetails = $userDetails->fill($validated1);
+        // if the validation fails for either checking, redirect back with error
+        if (!$userDetailsValidatedData || ($isStudent && !$studentDetailsValidatedData)) {
+            $updateSuccessMessage = 'Cannot update your profile.';
+            $toastColor = 'warning';
+            $toastHeader = 'Unsuccessful';
+            return $redirect->withInput()
+                ->with('update_successful', $updateSuccessMessage)
+                ->with('toast_color', $toastColor)
+                ->with('toast_icon', $toastIcon)
+                ->with('toast_header', $toastHeader);
+        }
+
+        // if no errors found, fill the entities with their corresponding validated data
+        $studentDetails = null;
+        $userDetails = $this->user->getUserDetails() ?? new UserDetailsEntity();
+        $userDetails->fill($userDetailsValidatedData);
+        if ($isStudent) {
+            $studentDetails = $this->user->getStudentDetails() ?? new StudentDetailsEntity();
+            $studentDetails->fill($studentDetailsValidatedData);
+        }
+
+        // check if the initial values of the entity properties have changed after filling
+        // them out with the validated data. if no changes, return with info alert
+        if (!$userDetails->hasChanged() && ($isStudent && !$studentDetails->hasChanged())) {
+            // if no changes, set the message to no changes
+            $updateSuccessMessage = 'No changes were made.';
+            $toastColor = 'info';
+            $toastHeader = 'Info';
+
+            return $redirect->withInput()
+                ->with('update_successful', $updateSuccessMessage)
+                ->with('toast_color', $toastColor)
+                ->with('toast_icon', $toastIcon)
+                ->with('toast_header', $toastHeader);
+        }
+
+        // else, save
+
+        // if user details has changes, save
+        $userDetailsSaved = false;
+        $studentDetailsSaved = false;
+        if ($userDetails->hasChanged()) {
             $userDetails->user_id = $userId;
+            $userDetailsSaved = $userDetailsModel->save($userDetails);
+        }
 
-            $studentDetails = new StudentDetailsEntity();
-            $studentDetails = $studentDetails->fill($validated2);
+        // if student and has changes, save
+        if ($isStudent && $studentDetails->hasChanged()) {
             $studentDetails->user_id = $userId;
+            $studentDetailsSaved = $studentDetailsModel->save($studentDetails);
+        }
 
-            if (!$this->user->isProfileComplete() ||
-                (
-                    $this->userDetailsHasChanges($validated1, $this->user->getUserDetails()->toArray())
-                    ||
-                    $this->userDetailsHasChanges($validated2, $this->user->getStudentDetails()->toArray())
-                )
-            ) {
-                $userDetailsSaved = $userDetailsModel->save($userDetails);
-                $studentDetailsSaved = $studentDetailsModel->save($studentDetails);
-                if ($userDetailsSaved && $studentDetailsSaved) {
-                    $updateSuccessMessage = 'Your profile details has been successfully updated!';
-                    $toastHeader = 'Success';
-                    $toastColor = 'success';
-                    $toastIcon = 'bxs-check-circle';
-                } else {
-                    $updateSuccessMessage = 'An error was encountered while updating your profile details.';
-                    $toastHeader = 'Error';
-                    $toastColor = 'danger';
-                    $toastIcon = 'bxs-x-circle';
-                }
-            }
+        // if either one of them were successfully saved
+        if ($userDetailsSaved || ($isStudent && $studentDetailsSaved)) {
+            $updateSuccessMessage = 'Your profile details has been successfully updated!';
+            $toastHeader = 'Success';
+            $toastColor = 'success';
+            $toastIcon = 'bxs-check-circle';
+        } else { // if none
+            $updateSuccessMessage = 'An error was encountered while updating your profile details.';
+            $toastHeader = 'Error';
+            $toastColor = 'danger';
+            $toastIcon = 'bxs-x-circle';
         }
 
         return $redirect->withInput()
@@ -102,17 +137,10 @@ class UserController extends BaseController
             ->with('toast_header', $toastHeader);
     }
 
-    // TODO convert to helper method
-    private function userDetailsHasChanges(array $array1, array $array2): bool
+    private function validateDetails(Validation $validation, string $ruleGroup): array
     {
-        $keys = array_keys($array1);
-        for ($i = 0; $i < count($array1); $i++) {
-            if (!in_array($keys[$i], ['user_id', 'created_at', 'updated_at'])) {
-                if ($array1[$keys[$i]] !== $array2[$keys[$i]]) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        $validation->setRuleGroup($ruleGroup);
+        $isValid = $validation->withRequest($this->request)->run();
+        return $isValid ? $validation->getValidated() : [];
     }
 }
