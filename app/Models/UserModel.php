@@ -12,16 +12,47 @@ class UserModel extends ShieldUserModel
     protected $returnType = UserEntity::class;
     protected $afterFind = ['fetchIdentities', 'getUserDetails', 'getStudentDetails'];
 
+    protected bool $withStudentDetails = false;
+
+    public function withStudentDetails (): self {
+        $this->withStudentDetails = true;
+        return $this;
+    }
+
+    protected function initialize(): void
+    {
+        parent::initialize();
+
+        $this->allowedFields = [
+            ...$this->allowedFields,
+            'user_type'
+        ];
+    }
+
     protected function getStudentDetails(array $data): array
     {
+        if (!$this->withStudentDetails) {
+            return $data;
+        }
+
         $userIds = $this->extractUserIds($data);
 
         if ($userIds === []) {
             return $data;
         }
 
-        if ($data['data']->user_type !== STUDENT) {
-            return $data;
+        if ($data['singleton']) {
+            if ($data['data']->user_type !== STUDENT) {
+                return $data;
+            }
+        }
+
+        $idx = 0;
+        foreach ($userIds as $userId) {
+            if ($data['data'][$userId]->user_type !== STUDENT) {
+                unset($userIds[$idx]);
+            }
+            $idx++;
         }
 
         /** @var StudentDetailsModel $studentDetailsModel */

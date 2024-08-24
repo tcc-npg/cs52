@@ -49,7 +49,6 @@ class UserController extends BaseController
     {
         /** @var Validation $validation */
         $validation = service('validation');
-        $redirect = redirect()->back();
         $isStudent = $this->request->getVar('is_student');
         $studentDetailsValidatedData = [];
         $studentDetailsModel = [];
@@ -70,11 +69,7 @@ class UserController extends BaseController
             $updateSuccessMessage = 'Cannot update your profile.';
             $toastColor = 'warning';
             $toastHeader = 'Unsuccessful';
-            return $redirect->withInput()
-                ->with('update_successful', $updateSuccessMessage)
-                ->with('toast_color', $toastColor)
-                ->with('toast_icon', $toastIcon)
-                ->with('toast_header', $toastHeader);
+            return $this->redirect($updateSuccessMessage, $toastColor, $toastHeader, $toastIcon);
         }
 
         // if no errors found, fill the entities with their corresponding validated data
@@ -94,11 +89,7 @@ class UserController extends BaseController
             $toastColor = 'info';
             $toastHeader = 'Info';
 
-            return $redirect->withInput()
-                ->with('update_successful', $updateSuccessMessage)
-                ->with('toast_color', $toastColor)
-                ->with('toast_icon', $toastIcon)
-                ->with('toast_header', $toastHeader);
+            return $this->redirect($updateSuccessMessage, $toastColor, $toastHeader, $toastIcon);
         }
 
         // else, save
@@ -130,11 +121,7 @@ class UserController extends BaseController
             $toastIcon = 'bxs-x-circle';
         }
 
-        return $redirect->withInput()
-            ->with('update_successful', $updateSuccessMessage)
-            ->with('toast_color', $toastColor)
-            ->with('toast_icon', $toastIcon)
-            ->with('toast_header', $toastHeader);
+        return $this->redirect($updateSuccessMessage, $toastColor, $toastHeader, $toastIcon);
     }
 
     private function validateDetails(Validation $validation, string $ruleGroup): array
@@ -142,5 +129,14 @@ class UserController extends BaseController
         $validation->setRuleGroup($ruleGroup);
         $isValid = $validation->withRequest($this->request)->run();
         return $isValid ? $validation->getValidated() : [];
+    }
+
+    private function redirect(string $updateSuccessMessage, string $toastColor, string $toastHeader, string $toastIcon): RedirectResponse
+    {
+        return redirect()->back()->withInput()
+            ->with('update_successful', $updateSuccessMessage)
+            ->with('toast_color', $toastColor)
+            ->with('toast_icon', $toastIcon)
+            ->with('toast_header', $toastHeader);
     }
 }
