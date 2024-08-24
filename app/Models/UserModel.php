@@ -10,12 +10,12 @@ use CodeIgniter\Shield\Models\UserModel as ShieldUserModel;
 class UserModel extends ShieldUserModel
 {
     protected $returnType = UserEntity::class;
-    protected $afterFind = ['fetchIdentities', 'getUserDetails', 'getStudentDetails'];
 
-    protected bool $withStudentDetails = false;
+    protected bool $withStudentDetails = true;
 
-    public function withStudentDetails (): self {
-        $this->withStudentDetails = true;
+    public function withStudentDetails(bool $include = true): self
+    {
+        $this->withStudentDetails = $include;
         return $this;
     }
 
@@ -27,10 +27,18 @@ class UserModel extends ShieldUserModel
             ...$this->allowedFields,
             'user_type'
         ];
+
+        $this->afterFind = [
+            ...$this->afterFind,
+            'getUserDetails',
+            'getStudentDetails'
+        ];
     }
 
     protected function getStudentDetails(array $data): array
     {
+        if (count($data) === 3 || !key_exists('id', $data)) return $data;
+
         if (!$this->withStudentDetails) {
             return $data;
         }
@@ -48,11 +56,17 @@ class UserModel extends ShieldUserModel
         }
 
         $idx = 0;
-        foreach ($userIds as $userId) {
-            if ($data['data'][$userId]->user_type !== STUDENT) {
-                unset($userIds[$idx]);
+        if ($data['singleton']) {
+            if ($data['data']->user_type !== STUDENT) {
+                return $data;
             }
-            $idx++;
+        } else {
+            foreach ($userIds as $userId) {
+                if ($data['data'][$userId]->user_type !== STUDENT) {
+                    unset($userIds[$idx]);
+                }
+                $idx++;
+            }
         }
 
         /** @var StudentDetailsModel $studentDetailsModel */
@@ -73,6 +87,8 @@ class UserModel extends ShieldUserModel
 
     protected function getUserDetails(array $data): array
     {
+        if (count($data) === 3 || !key_exists('id', $data)) return $data;
+
         $userIds = $this->extractUserIds($data);
 
         if ($userIds === []) {
