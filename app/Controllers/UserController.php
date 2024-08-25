@@ -4,9 +4,10 @@ namespace App\Controllers;
 
 use App\Entities\StudentDetailsEntity;
 use App\Entities\UserDetailsEntity;
+use App\Models\IrregStudentSubjectsModel;
 use App\Models\SettingsModel;
+use App\Models\StudentCurriculumModel;
 use App\Models\StudentDetailsModel;
-use App\Models\SubjectModel;
 use App\Models\UserDetailsModel;
 use CodeIgniter\HTTP\RedirectResponse;
 use CodeIgniter\Validation\Validation;
@@ -20,26 +21,48 @@ class UserController extends BaseController
     {
         helper('_toast');
         $studentDetails = null;
-        if ($this->user->inGroup('student')) {
+        $isStudent = $this->user->inGroup('student');
+        if ($isStudent) {
             $studentDetails = $this->user->getStudentDetails();
         }
         return view('user/profile', [
             'userDetails' => $this->user->getUserDetails(),
             'studentDetails' => $studentDetails,
             'userId' => $this->user->id,
-            'belongsToStudentGroup' => $this->user->inGroup('student') ? 'true' : 'false',
+            'belongsToStudentGroup' => $isStudent ? 'true' : 'false',
             'isProfileComplete' => $this->user->isProfileComplete()
         ]);
     }
 
     public function subjectsEnrolled(): string
     {
-        $subjectsModel = model(SubjectModel::class);
-        $settingsModel = model(SettingsModel::class);
-        $subjects = $subjectsModel->getSubjectsForYearAndSemester($this->user->getStudentDetails()->year_level, $settingsModel->findByKey('current_sem')->value);
-        return view('user/student/subjects-enrolled.php', [
+        $studentDetails = $this->user->getStudentDetails();
+        $isEnrolled = $studentDetails->is_enrolled;
+
+        if ($isEnrolled) {
+            $model = !$studentDetails->is_irreg ? model(StudentCurriculumModel::class) : model(IrregStudentSubjectsModel::class);
+            $settingsModel = model(SettingsModel::class);
+            $subjects = $model->getEnrolledSubjects(
+                $this->user->getStudentDetails(),
+                $settingsModel->findByKey('current_curriculum')->value,
+                $settingsModel->findByKey('current_semester')->value
+            );
+        }
+
+        $view = 'user/student/subjects-enrolled';
+
+        if (!$isEnrolled) {
+            $view = 'user/student/not-enrolled';
+        }
+
+        $data = [
+            'pageTitle' => 'Subjects Enrolled'
+        ];
+
+        return view($view, $isEnrolled ? [
+            ...$data,
             'subjects' => $subjects,
-        ]);
+        ] : $data);
     }
 
     /**

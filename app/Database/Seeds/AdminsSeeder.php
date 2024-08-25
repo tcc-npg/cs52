@@ -6,6 +6,9 @@ use App\Entities\UserEntity;
 use App\Models\UserDetailsModel;
 use App\Models\UserModel;
 use CodeIgniter\Database\Seeder;
+use CodeIgniter\Shield\Entities\User;
+use CodeIgniter\Shield\Entities\UserIdentity;
+use CodeIgniter\Shield\Models\UserIdentityModel;
 use Faker\Factory;
 use ReflectionException;
 
@@ -20,11 +23,10 @@ class AdminsSeeder extends Seeder
 
         $userModel = model(UserModel::class);
         $userDetailsModel = model(UserDetailsModel::class);
+        $userIdentityModel = model(UserIdentityModel::class);
 
-        $userModel->save([
-            'username' => 'theadmin',
-            'email' => $faker->unique()->email(),
-            'password' => 'admin123',
+        $userModel->insert([
+            'username' => $faker->unique()->userName(),
             'active' => 1,
             'user_type' => PROFESSOR
         ]);
@@ -46,5 +48,14 @@ class AdminsSeeder extends Seeder
             'phone_number' => $faker->phoneNumber(),
             'address' => $faker->address(),
         ]);
+
+        $userIdentity = (new UserIdentity())->fill([
+            'user_id' => $id,
+            'type' => 'email_password',
+            'secret' => $faker->unique()->email(),
+            'secret2' => (service('passwords'))->hash('admin123')
+        ]);
+
+        $userIdentityModel->save($userIdentity);
     }
 }

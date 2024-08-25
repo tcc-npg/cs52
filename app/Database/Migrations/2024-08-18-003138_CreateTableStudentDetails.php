@@ -21,6 +21,12 @@ class CreateTableStudentDetails extends Migration
                 'constraint' => 10,
                 'null' => false,
             ],
+            'is_irreg' => [
+                'type' => 'tinyint',
+                'constraint' => 1,
+                'null' => false,
+                'default' => 0
+            ],
             'year_level' => [
                 'type' => 'tinyint',
                 'constraint' => 1,
@@ -44,7 +50,9 @@ class CreateTableStudentDetails extends Migration
             ]
         ]);
         $this->db->disableForeignKeyChecks();
-        $this->forge->addPrimaryKey('id');
+        $this->forge->addPrimaryKey('user_id');
+        $this->forge->addUniqueKey('student_number');
+        $this->forge->addKey('is_irreg');
         $this->forge->addForeignKey('user_id', 'users', 'id', '', 'CASCADE');
         $this->forge->addForeignKey('program_code', 'programs', 'code');
         $this->forge->createTable('student_details');

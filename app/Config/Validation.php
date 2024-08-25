@@ -92,12 +92,17 @@ class Validation extends BaseConfig
     ];
 
     public array $studentDetailsRules = [
+        'user_id' => [
+            'rules' => 'required',
+            'errors' => ['required' => 'Student ID must not be blank.']
+        ],
         'student_number' => [ // todo regex
-            'rules' => 'required|max_length[10]|min_length[10]',
+            'rules' => 'required|max_length[10]|min_length[10]|is_unique[student_details.student_number,user_id,{user_id}]',
             'errors' => [
                 'required' => 'Your student number cannot be blank.',
                 'min_length' => 'Your student number cannot have less than 10 characters.',
                 'max_length' => 'Your student number cannot have more than 10 characters.',
+                'is_unique' => 'Student ID already taken.',
             ],
         ],
         'year_level' => [
