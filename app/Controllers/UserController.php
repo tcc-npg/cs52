@@ -20,14 +20,15 @@ class UserController extends BaseController
     {
         helper('_toast');
         $studentDetails = null;
-        if ($this->user->inGroup('student')) {
+        $isStudent = $this->user->inGroup('student');
+        if ($isStudent) {
             $studentDetails = $this->user->getStudentDetails();
         }
         return view('user/profile', [
             'userDetails' => $this->user->getUserDetails(),
             'studentDetails' => $studentDetails,
             'userId' => $this->user->id,
-            'belongsToStudentGroup' => $this->user->inGroup('student') ? 'true' : 'false',
+            'belongsToStudentGroup' => $isStudent ? 'true' : 'false',
             'isProfileComplete' => $this->user->isProfileComplete()
         ]);
     }
