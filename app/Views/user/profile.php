@@ -29,6 +29,9 @@
                     <?= form_hidden('is_student', $belongsToStudentGroup); ?>
                     <?= form_hidden('user_id', strval($userId)); ?>
                 <?php endif; ?>
+                <?php if(url_is('students/profile/*')) : ?>
+                    <?= form_hidden('from_list', 'true'); ?>
+                <?php endif; ?>
                 <div class="card-body">
                     <div class="d-flex align-items-start align-items-sm-center gap-4">
                         <?= img([
@@ -303,7 +306,7 @@
                                             placeholder="Email"
                                             autofocus
                                             required
-                                            value="<?= auth()->user()->getEmail(); ?>"
+                                            value="<?= $user->getEmail(); ?>"
                                             disabled
                                     >
                                 </div>

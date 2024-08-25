@@ -27,6 +27,19 @@ class StudentDetailsModel extends Model
         return $this->whereIn('user_id', $ids)->findAll();
     }
 
+    public function getStudentsByYear(int|string $year): array
+    {
+        if ($year === 'all') {
+            return $this->join('user_details', 'user_details.user_id = student_details.user_id')
+                ->orderBy('year_level', 'ASC')
+                ->orderBy('student_number', 'ASC')
+                ->findAll();
+        }
+        return $this->where('year_level', $year)
+            ->join('user_details', 'user_details.user_id = student_details.user_id')
+            ->findAll();
+    }
+
     protected function touch(array $data): array
     {
         $data['data']['updated_at'] = date('Y-m-d H:i:s');

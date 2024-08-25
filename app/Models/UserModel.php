@@ -35,6 +35,11 @@ class UserModel extends ShieldUserModel
         ];
     }
 
+    public function getByUserType(string $type): array
+    {
+        return $this->where('user_type', $type)->findAll();
+    }
+
     protected function getStudentDetails(array $data): array
     {
         if (count($data) === 3 || !key_exists('id', $data)) return $data;
