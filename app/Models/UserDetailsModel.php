@@ -20,6 +20,8 @@ class UserDetailsModel extends Model
         'gender',
         'phone_number',
         'address',
+        'is_enrolled',
+        'is_irreg',
         'user_type',
         'updated_at'
     ];

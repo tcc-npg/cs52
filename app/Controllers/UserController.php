@@ -4,9 +4,10 @@ namespace App\Controllers;
 
 use App\Entities\StudentDetailsEntity;
 use App\Entities\UserDetailsEntity;
+use App\Models\IrregStudentSubjectsModel;
 use App\Models\SettingsModel;
+use App\Models\StudentCurriculumModel;
 use App\Models\StudentDetailsModel;
-use App\Models\SubjectModel;
 use App\Models\UserDetailsModel;
 use CodeIgniter\HTTP\RedirectResponse;
 use CodeIgniter\Validation\Validation;
@@ -35,12 +36,33 @@ class UserController extends BaseController
 
     public function subjectsEnrolled(): string
     {
-        $subjectsModel = model(SubjectModel::class);
-        $settingsModel = model(SettingsModel::class);
-        $subjects = $subjectsModel->getSubjectsForYearAndSemester($this->user->getStudentDetails()->year_level, $settingsModel->findByKey('current_sem')->value);
-        return view('user/student/subjects-enrolled.php', [
+        $studentDetails = $this->user->getStudentDetails();
+        $isEnrolled = $studentDetails->is_enrolled;
+
+        if ($isEnrolled) {
+            $model = !$studentDetails->is_irreg ? model(StudentCurriculumModel::class) : model(IrregStudentSubjectsModel::class);
+            $settingsModel = model(SettingsModel::class);
+            $subjects = $model->getEnrolledSubjects(
+                $this->user->getStudentDetails(),
+                $settingsModel->findByKey('current_curriculum')->value,
+                $settingsModel->findByKey('current_semester')->value
+            );
+        }
+
+        $view = 'user/student/subjects-enrolled';
+
+        if (!$isEnrolled) {
+            $view = 'user/student/not-enrolled';
+        }
+
+        $data = [
+            'pageTitle' => 'Subjects Enrolled'
+        ];
+
+        return view($view, $isEnrolled ? [
+            ...$data,
             'subjects' => $subjects,
-        ]);
+        ] : $data);
     }
 
     /**

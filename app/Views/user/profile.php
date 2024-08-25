@@ -27,6 +27,7 @@
                 <?= form_open(url_to('user.update', $userId)); ?>
                 <?php if($belongsToStudentGroup == 'true') : ?>
                     <?= form_hidden('is_student', $belongsToStudentGroup); ?>
+                    <?= form_hidden('user_id', strval($userId)); ?>
                 <?php endif; ?>
                 <div class="card-body">
                     <div class="d-flex align-items-start align-items-sm-center gap-4">

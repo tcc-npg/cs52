@@ -16,6 +16,11 @@ class CreateTableSubjects extends Migration
                 'null' => false,
                 'auto_increment' => true,
             ],
+            'curriculum_id' => [
+                'type' => 'int',
+                'null' => true,
+                'unsigned' => true
+            ],
             'code' => [
                 'type' => 'varchar',
                 'constraint' => '10',
@@ -64,10 +69,12 @@ class CreateTableSubjects extends Migration
         $this->forge->addPrimaryKey('id');
         $this->forge->addUniqueKey('code');
         $this->forge->createTable('subjects');
+        $this->db->query('alter table subjects add constraint foreign key subject_curriculum_id (curriculum_id) references curricula(id) on delete set null');
     }
 
     public function down(): void
     {
+        $this->db->query('alter table subjects drop foreign key subject_curriculum_id');
         $this->forge->dropTable('subjects');
     }
 }

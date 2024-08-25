@@ -62,7 +62,7 @@ class SubjectsSeeder extends Seeder
             'description' => $name,
             'slug' => strtolower(url_title($name)),
             'units' => $units,
+            'curriculum_id' => 1,
         ];
-
     }
 }
