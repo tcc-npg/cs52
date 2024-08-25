@@ -13,7 +13,7 @@ class AlterUsersAddUserType extends Migration
                 'type' => 'enum',
                 'null' => false,
                 'default' => 'STU',
-                'constraint' => ['STU', 'PROF'],
+                'constraint' => ['STU', 'PROF', 'ADM'],
             ],
         ]);
     }

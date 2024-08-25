@@ -9,7 +9,9 @@ use App\Models\SettingsModel;
 use App\Models\StudentCurriculumModel;
 use App\Models\StudentDetailsModel;
 use App\Models\UserDetailsModel;
+use App\Models\UserModel;
 use CodeIgniter\HTTP\RedirectResponse;
+use CodeIgniter\Shield\Entities\User;
 use CodeIgniter\Validation\Validation;
 use ReflectionException;
 
@@ -17,20 +19,34 @@ class UserController extends BaseController
 {
     protected $helpers = ['form'];
 
-    public function index(): string
+    public function index(int $id = null): string
     {
         helper('_toast');
         $studentDetails = null;
-        $isStudent = $this->user->inGroup('student');
-        if ($isStudent) {
-            $studentDetails = $this->user->getStudentDetails();
+
+        if (is_null($id)) {
+            $user = $this->user;
+            $isStudent = $user->inGroup('student');
+            if ($isStudent) {
+                $studentDetails = $user->getStudentDetails();
+            }
+            $userDetails = $user->getUserDetails();
+        } else {
+            $user = auth()->getProvider()->findById($id);
+            $isStudent = $user->inGroup('student');
+            if ($isStudent) {
+                $studentDetails = $user->getStudentDetails();
+            }
+            $userDetails = $user->getUserDetails();
         }
+
         return view('user/profile', [
-            'userDetails' => $this->user->getUserDetails(),
+            'userDetails' => $userDetails,
             'studentDetails' => $studentDetails,
-            'userId' => $this->user->id,
+            'user' => $user,
+            'userId' => $user->id,
             'belongsToStudentGroup' => $isStudent ? 'true' : 'false',
-            'isProfileComplete' => $this->user->isProfileComplete()
+            'isProfileComplete' => $user->isProfileComplete()
         ]);
     }
 
@@ -72,10 +88,17 @@ class UserController extends BaseController
     {
         /** @var Validation $validation */
         $validation = service('validation');
-        $isStudent = $this->request->getVar('is_student');
+        $isStudent = $this->request->getVar('is_student') ?? false;
+        $fromList = $this->request->getVar('from_list') ?? false;
         $studentDetailsValidatedData = [];
         $studentDetailsModel = [];
         $toastIcon = 'bxs-info-circle';
+
+        if ($fromList) {
+            $user = auth()->getProvider()->findById($userId);
+        } else {
+            $user = $this->user;
+        }
 
         // validate user details
         $userDetailsValidatedData = $this->validateDetails($validation, 'userDetailsRules');
@@ -89,7 +112,7 @@ class UserController extends BaseController
 
         // if the validation fails for either checking, redirect back with error
         if (!$userDetailsValidatedData || ($isStudent && !$studentDetailsValidatedData)) {
-            $updateSuccessMessage = 'Cannot update your profile.';
+            $updateSuccessMessage = 'Fail to update profile.';
             $toastColor = 'warning';
             $toastHeader = 'Unsuccessful';
             return $this->redirect($updateSuccessMessage, $toastColor, $toastHeader, $toastIcon);
@@ -97,16 +120,16 @@ class UserController extends BaseController
 
         // if no errors found, fill the entities with their corresponding validated data
         $studentDetails = null;
-        $userDetails = $this->user->getUserDetails() ?? new UserDetailsEntity();
+        $userDetails = $user->getUserDetails() ?? new UserDetailsEntity();
         $userDetails->fill($userDetailsValidatedData);
         if ($isStudent) {
-            $studentDetails = $this->user->getStudentDetails() ?? new StudentDetailsEntity();
+            $studentDetails = $user->getStudentDetails() ?? new StudentDetailsEntity();
             $studentDetails->fill($studentDetailsValidatedData);
         }
 
         // check if the initial values of the entity properties have changed after filling
         // them out with the validated data. if no changes, return with info alert
-        if (!$userDetails->hasChanged() && ($isStudent && !$studentDetails->hasChanged())) {
+        if ((!$userDetails->hasChanged() && ($isStudent && !$studentDetails->hasChanged())) || (!$userDetails->hasChanged() && !$isStudent)) {
             // if no changes, set the message to no changes
             $updateSuccessMessage = 'No changes were made.';
             $toastColor = 'info';
@@ -133,12 +156,12 @@ class UserController extends BaseController
 
         // if either one of them were successfully saved
         if ($userDetailsSaved || ($isStudent && $studentDetailsSaved)) {
-            $updateSuccessMessage = 'Your profile details has been successfully updated!';
+            $updateSuccessMessage = 'Profile details has been successfully updated!';
             $toastHeader = 'Success';
             $toastColor = 'success';
             $toastIcon = 'bxs-check-circle';
         } else { // if none
-            $updateSuccessMessage = 'An error was encountered while updating your profile details.';
+            $updateSuccessMessage = 'An error was encountered while saving profile details.';
             $toastHeader = 'Error';
             $toastColor = 'danger';
             $toastIcon = 'bxs-x-circle';

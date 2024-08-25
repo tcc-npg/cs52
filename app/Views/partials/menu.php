@@ -42,6 +42,10 @@
             </ul>
         </li>
 
+        <?php if (auth()->user()->inGroup('admin')): ?>
+            <?= $this->include('partials/menu-students')  ;?>
+        <?php endif; ?>
+
         <!-- Academic Resources -->
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">Academic Resources</span>

@@ -53,6 +53,7 @@ class CreateTableStudentDetails extends Migration
         $this->forge->addPrimaryKey('user_id');
         $this->forge->addUniqueKey('student_number');
         $this->forge->addKey('is_irreg');
+        $this->forge->addKey('year_level');
         $this->forge->addForeignKey('user_id', 'users', 'id', '', 'CASCADE');
         $this->forge->addForeignKey('program_code', 'programs', 'code');
         $this->forge->createTable('student_details');
