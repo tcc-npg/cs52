@@ -1,5 +1,6 @@
 <?php
 
+use App\Controllers\InventorySystem\DashboardController;
 use App\Controllers\StudentsController;
 use App\Controllers\UserController;
 use App\Filters\AdminsOnly;
@@ -33,4 +34,12 @@ $routes->group('students',
     $routes->get('list/(:alphanum)', [StudentsController::class, 'list'], [
         'as' => 'students.list',
     ]);
+});
+
+// inventory system
+$routes->group('inventory',
+    ['filter' => AdminsOnly::class],
+    static function ($routes) {
+    $routes->get('dashboard', [DashboardController::class, 'dashboard'], ['as' => 'inventory.dashboard']);
+    
 });

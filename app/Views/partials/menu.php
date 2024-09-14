@@ -46,6 +46,17 @@
             <?= $this->include('partials/menu-students')  ;?>
         <?php endif; ?>
 
+         <!-- Inventory System -->
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Inventory System</span>
+        </li>
+        <li class="menu-item">
+            <a href="<?php echo url_to('inventory.dashboard'); ?>" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                <div>Dashboard</div>
+            </a>
+        </li>
+
         <!-- Academic Resources -->
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">Academic Resources</span>
