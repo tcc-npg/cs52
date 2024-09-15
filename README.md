@@ -32,9 +32,9 @@ Download and install the following:
    composer install
    ```
 
-5. Rename the `env` file to `.env`:
+5. Copy the `env` file to `.env`:
    ```shell
-   mv env .env
+   cp env .env
    ```
 
 6. Start XAMPP and click the `Start` buttons of Apache and MySQL services. Once successfully started, Click the `Admin`
