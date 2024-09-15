@@ -57,10 +57,5 @@
                 <div>Dashboard</div>
             </a>
         </li>
-
-        <!-- Admin -->
-        <?php if (auth()->user()->inGroup('admin')): ?>
-            <?= $this->include('partials/menu-admin')  ;?>
-        <?php endif; ?>
     </ul>
 </aside>
