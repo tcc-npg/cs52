@@ -22,4 +22,12 @@ class SettingsModel extends Model
     {
         return $this->where('key', $key)->first();
     }
+
+    public function findByClass(string|array $class): object|array|null
+    {
+        if (!is_array($class)) {
+            return $this->where('class', $class)->findAll();
+        }
+        return $this->whereIn('class', $class)->findAll();
+    }
 }

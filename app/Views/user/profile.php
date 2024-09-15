@@ -2,13 +2,10 @@
 <?= $this->section('pageTitle'); ?>- Dashboard<?= $this->endSection('pageTitle'); ?>
 <?= $this->section('content'); ?>
 <div class="container-xxl flex-grow-1 container-p-y">
-    <?php if (session('update_successful')) :
-        $message = session('update_successful');
-        $icon = session('toast_icon');
-        $header = session('toast_header');
-        $type = session('toast_color');
-        echo showToast($message, $type, $header, $icon);
-        ?>
+
+    <?php if (session('update_successful')): ?>
+
+        <?= showToast(); ?>
 
         <?= $this->section('nonceScript'); ?>
         <script>
@@ -16,7 +13,9 @@
             toastPlacement.show();
         </script>
         <?= $this->endSection('nonceScript'); ?>
+
     <?php endif; ?>
+
     <h4 class="fw-bold py-3 mb-4"><span
                 class="text-muted fw-light">Account <?php if (!$isProfileComplete): ?>/</span> Complete
         Your Profile<?php endif; ?></h4>

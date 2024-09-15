@@ -76,11 +76,13 @@
                         </div>
                     </form>
 
-                    <p class="text-center">
-                        <a href="<?= url_to('register') ?>">
-                            <span>Create an account</span>
-                        </a>
-                    </p>
+                    <?php if(isRegistrationAllowed()): ?>
+                        <p class="text-center">
+                            <a href="<?= url_to('register') ?>">
+                                <span>Create an account</span>
+                            </a>
+                        </p>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
