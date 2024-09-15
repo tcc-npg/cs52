@@ -29,10 +29,10 @@ class SettingsSeeder extends Seeder
                 ],
                 [
                     'class' => 'academic',
-                    'key' => 'is_enrollment_active',
+                    'key' => 'current_sy',
                     'value' => '1',
                     'type' => 'int',
-                    'context' => 'Is enrollment season',
+                    'context' => 'Current school year',
                     'created_at' => new RawSql('current_timestamp'),
                 ],
                 [

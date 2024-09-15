@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\CurriculumModel;
+use App\Models\SchoolYearModel;
 use App\Models\SettingsModel;
 use CodeIgniter\Database\Exceptions\DataException;
 use CodeIgniter\HTTP\RedirectResponse;
@@ -31,9 +32,12 @@ class SettingsController extends BaseController
     public function index(): string
     {
         $curriculaModel = model(CurriculumModel::class);
+        $currentSchoolYearModel = model(SchoolYearModel::class);
         return view('settings/settings', [
             'groups' => $this->groups,
-            'curricula' => $curriculaModel->findAll()
+            'curricula' => $curriculaModel->findAll(),
+            'currentSchoolYear' => (int)$this->groups['academic']['current_sy']->value,
+            'schoolYears' => $currentSchoolYearModel->findAll()
         ]);
     }
 
@@ -76,21 +80,30 @@ class SettingsController extends BaseController
         return redirectBackWithToast($updateSuccessMessage, $toastColor, $toastHeader, $toastIcon);
     }
 
+    /**
+     * @throws ReflectionException
+     */
     private function updateAcademicClassValues(): bool
     {
         $requestData = $this->request->getPost();
 
+        $atLeastOneSaved = false;
+
+        $toUpdate = [];
+
         foreach ($this->groups['academic'] as $setting) {
             if (array_key_exists($setting->key, $requestData)) {
                 $setting->value = $requestData[$setting->key];
-                try {
-                    return $this->settingsModel->save($setting);
-                } catch (DataException) {
-                    return false;
+                if ($setting->hasChanged()) {
+                    $toUpdate[] = $setting;
                 }
             }
         }
-        return false;
+
+        if (empty($toUpdate)) return false;
+
+        return $this->settingsModel->updateBatch($toUpdate, 'id');
+//        return $atLeastOneSaved;
     }
 
 
