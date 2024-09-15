@@ -7,5 +7,6 @@ use CodeIgniter\Entity\Entity;
 class SettingsEntity extends Entity
 {
     protected $dates = ['created_at', 'updated_at'];
+
     protected $casts = ['id' => 'integer'];
 }
