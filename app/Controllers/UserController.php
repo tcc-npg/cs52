@@ -9,15 +9,13 @@ use App\Models\SettingsModel;
 use App\Models\StudentCurriculumModel;
 use App\Models\StudentDetailsModel;
 use App\Models\UserDetailsModel;
-use App\Models\UserModel;
 use CodeIgniter\HTTP\RedirectResponse;
-use CodeIgniter\Shield\Entities\User;
 use CodeIgniter\Validation\Validation;
 use ReflectionException;
 
 class UserController extends BaseController
 {
-    protected $helpers = ['form'];
+    protected $helpers = ['form', '_url'];
 
     public function index(int $id = null): string
     {
@@ -115,7 +113,7 @@ class UserController extends BaseController
             $updateSuccessMessage = 'Fail to update profile.';
             $toastColor = 'warning';
             $toastHeader = 'Unsuccessful';
-            return $this->redirect($updateSuccessMessage, $toastColor, $toastHeader, $toastIcon);
+            return redirectBackWithToast($updateSuccessMessage, $toastColor, $toastHeader, $toastIcon);
         }
 
         // if no errors found, fill the entities with their corresponding validated data
@@ -135,7 +133,7 @@ class UserController extends BaseController
             $toastColor = 'info';
             $toastHeader = 'Info';
 
-            return $this->redirect($updateSuccessMessage, $toastColor, $toastHeader, $toastIcon);
+            return redirectBackWithToast($updateSuccessMessage, $toastColor, $toastHeader, $toastIcon);
         }
 
         // else, save
@@ -167,7 +165,7 @@ class UserController extends BaseController
             $toastIcon = 'bxs-x-circle';
         }
 
-        return $this->redirect($updateSuccessMessage, $toastColor, $toastHeader, $toastIcon);
+        return redirectBackWithToast($updateSuccessMessage, $toastColor, $toastHeader, $toastIcon);
     }
 
     private function validateDetails(Validation $validation, string $ruleGroup): array
@@ -175,14 +173,5 @@ class UserController extends BaseController
         $validation->setRuleGroup($ruleGroup);
         $isValid = $validation->withRequest($this->request)->run();
         return $isValid ? $validation->getValidated() : [];
-    }
-
-    private function redirect(string $updateSuccessMessage, string $toastColor, string $toastHeader, string $toastIcon): RedirectResponse
-    {
-        return redirect()->back()->withInput()
-            ->with('update_successful', $updateSuccessMessage)
-            ->with('toast_color', $toastColor)
-            ->with('toast_icon', $toastIcon)
-            ->with('toast_header', $toastHeader);
     }
 }
