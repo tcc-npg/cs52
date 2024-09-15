@@ -13,5 +13,8 @@ class MainSeeder extends Seeder
         $this->call(ProgramsSeeder::class);
         $this->call(SubjectsSeeder::class);
         $this->call(AdminsSeeder::class);
+        $this->call(SchoolYearSeeder::class);
+        $this->call(BooksSeeder::class);
+        $this->call(StudentsSeeder::class);
     }
 }

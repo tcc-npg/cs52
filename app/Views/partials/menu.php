@@ -58,6 +58,22 @@
             </a>
         </li>
 
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Academic</span>
+        </li>
+        <li class="menu-item">
+            <a href="<?php echo url_to('curriculum.index'); ?>" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                <div>Curriculum List</div>
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="<?php echo url_to('subjects.list'); ?>" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                <div>Subject List</div>
+            </a>
+        </li>
+
         <!-- Admin -->
         <?php if (auth()->user()->inGroup('admin')): ?>
             <?= $this->include('partials/menu-admin')  ;?>

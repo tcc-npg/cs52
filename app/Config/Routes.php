@@ -1,5 +1,6 @@
 <?php
 
+use App\Controllers\CurriculumController;
 use App\Controllers\InventorySystem\DashboardController;
 use App\Controllers\SettingsController;
 use App\Controllers\StudentsController;
@@ -41,7 +42,7 @@ $routes->group('students',
 $routes->group('inventory',
     ['filter' => AdminsOnly::class],
     static function ($routes) {
-        $routes->get('dashboard', [DashboardController::class, 'dashboard'], ['as' => 'inventory.dashboard']);
+        $routes->get('', [DashboardController::class, 'dashboard'], ['as' => 'inventory.dashboard']);
 
     });
 
@@ -53,3 +54,14 @@ $routes->group('settings',
         $routes->get('/', [SettingsController::class, 'index'], ['as' => 'settings.index']);
         $routes->post('save', [SettingsController::class, 'save'], ['as' => 'settings.save']);
     });
+
+
+$routes->group('curriculum', ['filter' => AdminsOnly::class], function ($routes) {
+    $routes->get('/', [CurriculumController::class, 'index'], ['as' => 'curriculum.index']);
+    $routes->get('new', [CurriculumController::class, 'new'], ['as' => 'curriculum.new']);
+    $routes->post('save', [CurriculumController::class, 'save'], ['as' => 'curriculum.save']);
+    $routes->get('subjects', [CurriculumController::class, 'subjectsList'], ['as' => 'subjects.list']);
+    $routes->get('subjects/update/(:num)', [CurriculumController::class, 'subjectsUpdatePage'], ['as' => 'subjects.updatePage']);
+    $routes->post('subjects/update/(:num)', [CurriculumController::class, 'subjectsUpdate'], ['as' => 'subjects.update']);
+    $routes->post('subjects/delete/(:num)', [CurriculumController::class, 'subjectsDelete'], ['as' => 'subjects.delete']);
+});
