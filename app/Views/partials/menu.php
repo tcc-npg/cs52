@@ -13,7 +13,7 @@
 
     <ul class="menu-inner py-1">
         <!-- Dashboard -->
-        <li class="menu-item <?= url_is('/') ? 'active' : ''; ?>">
+        <li class="menu-item <?= is_active_menu('/', true); ?>">
             <a href="<?= base_url('/'); ?>" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-home-circle"></i>
                 <div>Dashboard</div>
@@ -21,19 +21,19 @@
         </li>
 
         <!-- Account -->
-        <li class="menu-item <?= url_is('user*') ? 'open' : ''; ?>">
+        <li class="menu-item <?= is_active_menu('user*'); ?>">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons bx bx-dock-top"></i>
                 <div>Account</div>
             </a>
             <ul class="menu-sub">
-                <li class="menu-item <?= url_is('user') ? 'active' : ''; ?>">
+                <li class="menu-item <?= is_active_menu('user', true); ?>">
                     <a href="<?= url_to('user.index'); ?>" class="menu-link">
                         <div>Profile</div>
                     </a>
                 </li>
                 <?php if (auth()->user()->inGroup('student')) : ?>
-                    <li class="menu-item <?= url_is('user/subjects-enrolled') ? 'active' : ''; ?>">
+                    <li class="menu-item <?= is_active_menu('user/subjects-enrolled', true); ?>">
                         <a href="<?= url_to('user.subjects-enrolled'); ?>" class="menu-link">
                             <div>My Subjects</div>
                         </a>
@@ -42,6 +42,7 @@
             </ul>
         </li>
 
+        <!-- Students menu -->
         <?php if (auth()->user()->inGroup('admin')): ?>
             <?= $this->include('partials/menu-students')  ;?>
         <?php endif; ?>
@@ -54,29 +55,6 @@
             <a href="<?php echo url_to('inventory.dashboard'); ?>" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-home-circle"></i>
                 <div>Dashboard</div>
-            </a>
-        </li>
-
-        <!-- Academic Resources -->
-        <li class="menu-header small text-uppercase">
-            <span class="menu-header-text">Academic Resources</span>
-        </li>
-        <li class="menu-item">
-            <a href="javascript:void(0);" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-book"></i>
-                <div>Library</div>
-            </a>
-        </li>
-        <li class="menu-item">
-            <a href="javascript:void(0);" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-chat"></i>
-                <div>Forum</div>
-            </a>
-        </li>
-        <li class="menu-item">
-            <a href="javascript:void(0);" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div>Flashcards</div>
             </a>
         </li>
     </ul>
