@@ -1,6 +1,10 @@
 <?php
-function showToast(string $msg, string $type = 'success', string $header = 'Success', string $icon = 'bxs-check-circle'): string
+function showToast(string $msg = null, string $type = 'success', string $header = 'Success', string $icon = 'bxs-check-circle'): string
 {
+    $msg = session('update_successful') ?? $msg;
+    $icon = session('toast_icon') ?? $icon;
+    $header = session('toast_header') ?? $header;
+    $type = session('toast_color') ?? $type;
     return sprintf(
         '<div
                     class="bs-toast toast bg-%s fade toast-placement-ex m-2 top-0 start-50 translate-middle-x"
