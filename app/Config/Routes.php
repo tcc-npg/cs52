@@ -1,5 +1,6 @@
 <?php
 
+use App\Controllers\MonitoringSystem;
 use App\Controllers\StudentsController;
 use App\Controllers\UserController;
 use App\Filters\AdminsOnly;
@@ -32,5 +33,16 @@ $routes->group('students',
     $routes->get('profile/(:num)', [UserController::class, 'index'], ['as' => 'students.profile.index']);
     $routes->get('list/(:alphanum)', [StudentsController::class, 'list'], [
         'as' => 'students.list',
-    ]);
+    ]); 
+});
+
+//monitoring
+$routes->group('monitoring', static function ($routes) {
+    $routes->get('/', [MonitoringSystem::class, 'uniform'], ['as' => 'monitoring.uniform']);
+    $routes->get('modules', [MonitoringSystem::class, 'modules'], ['as' => 'monitoring.modules']);
+    $routes->get('otherPayables', [MonitoringSystem::class,'otherPayables'], ['as' => 'monitoring.otherPayables']);
+    $routes->get('sudentsList/(:num)', [MonitoringSystem::class,'studentsList'], ['as' => 'monitoring.studentsList']);
+    // DRAFT ROUTE FOR ADDING STUDENTS IN THE UNIFORM LIST
+    $routes->post('addStudentInUniform', [MonitoringSystem::class,'addStudentInUniform'], ['as' => 'monitoring.addStudentInUniform']);
+
 });

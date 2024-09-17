@@ -16,7 +16,7 @@ class StudentsController extends BaseController
             throw PageNotFoundException::forPageNotFound();
         }
 
-        helper('inflector');
+        helper('inflector'); 
         $model = model(StudentDetailsModel::class);
         $studentList = $model->getStudentsByYear($year);
         return view('user/student/student-list', [
