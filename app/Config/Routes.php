@@ -1,12 +1,12 @@
 <?php
 
-<<<<<<< HEAD
+
 use App\Controllers\MonitoringSystem;
-=======
+
 use App\Controllers\CurriculumController;
 use App\Controllers\InventorySystem\DashboardController;
 use App\Controllers\SettingsController;
->>>>>>> dbe32bbbe2b7249d2e6f6622b2e921be52852268
+
 use App\Controllers\StudentsController;
 use App\Controllers\UserController;
 use App\Filters\AdminsOnly;
@@ -36,12 +36,12 @@ $routes->group('user', static function ($routes) {
 $routes->group('students',
     ['filter' => AdminsOnly::class],
     static function ($routes) {
-<<<<<<< HEAD
+
     $routes->get('profile/(:num)', [UserController::class, 'index'], ['as' => 'students.profile.index']);
     $routes->get('list/(:alphanum)', [StudentsController::class, 'list'], [
         'as' => 'students.list',
     ]); 
-=======
+    
         $routes->get('profile/(:num)', [UserController::class, 'index'], ['as' => 'students.profile.index']);
         $routes->get('list/(:alphanum)', [StudentsController::class, 'list'], [
             'as' => 'students.list',
@@ -68,13 +68,13 @@ $routes->group('settings',
 
 $routes->group('curriculum', ['filter' => AdminsOnly::class], function ($routes) {
     $routes->get('/', [CurriculumController::class, 'index'], ['as' => 'curriculum.index']);
-    $routes->get('new', [CurriculumController::class, 'new'], ['as' => 'curriculum.new']);
+    $routes->get('new', [CurriculumController::class, 'new'], ['as' => 'cu  rriculum.new']);
     $routes->post('save', [CurriculumController::class, 'save'], ['as' => 'curriculum.save']);
     $routes->get('subjects', [CurriculumController::class, 'subjectsList'], ['as' => 'subjects.list']);
     $routes->get('subjects/update/(:num)', [CurriculumController::class, 'subjectsUpdatePage'], ['as' => 'subjects.updatePage']);
     $routes->post('subjects/update/(:num)', [CurriculumController::class, 'subjectsUpdate'], ['as' => 'subjects.update']);
     $routes->post('subjects/delete/(:num)', [CurriculumController::class, 'subjectsDelete'], ['as' => 'subjects.delete']);
->>>>>>> dbe32bbbe2b7249d2e6f6622b2e921be52852268
+
 });
 
 //monitoring
