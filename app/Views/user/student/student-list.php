@@ -12,7 +12,7 @@
                     <h5>List of <?= $year === 'all' ? 'All Students' : $year . ordinal($year) . ' Years'; ?></h5>
                     <small class="text-muted float-end"><?= count($list); ?> students</small>
                 </div>
-                <div class="table-responsive text-nowrap">
+                <div class="table-responsive text-nowrap overflow-visible">
                     <table class="table">
                         <thead>
                         <tr>
@@ -27,40 +27,55 @@
                         </tr>
                         </thead>
                         <tbody class="table-border-bottom-0">
-                        <?php foreach ($list as $student): ?>
+                        <?php if($list): ?>
+                            <?php foreach ($list as $student): ?>
+                                <tr>
+                                    <td><strong><?= $student->first_name . ' ' . $student->last_name; ?></strong></td>
+                                    <td class="text-center"><?= $student->student_number; ?></td>
+                                    <?php if ($year === 'all') : ?>
+                                        <th class="text-center"><?= $student->year_level . ordinal($student->year_level) . ' Year'; ?></th>
+                                    <?php endif; ?>
+                                    <td class="text-center"><?= strtoupper($student->program_code); ?></td>
+                                    <td class="text-center"><?= $student->is_enrolled ? 'Yes' : 'No'; ?></td>
+                                    <td class="text-center">
+                                        <div class="btn-group dropend" style="z-index: 9999">
+                                            <button
+                                                    type="button"
+                                                    class="btn btn-primary btn-icon rounded-pill dropdown-toggle hide-arrow btn-sm"
+                                                    data-bs-toggle="dropdown"
+                                                    aria-expanded="false"
+                                            >
+                                                <i class="bx bx-dots-vertical-rounded"></i>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <h6 class="dropdown-header text-uppercase"><?= $student->student_number; ?></h6>
+                                                </li>
+                                                <li><a class="dropdown-item"
+                                                       href="<?= url_to('students.profile.index', $student->user_id) ?>">Update
+                                                        Profile</a></li>
+                                                <li><a class="dropdown-item" href="javascript:void(0);">Enroll Student</a>
+                                                </li>
+                                                <li>
+                                                    <hr class="dropdown-divider"/>
+                                                </li>
+                                                <li><a class="dropdown-item" href="javascript:void(0);">Delete</a></li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
                             <tr>
-                                <td><strong><?= $student->first_name . ' ' . $student->last_name; ?></strong></td>
-                                <td class="text-center"><?= $student->student_number; ?></td>
-                                <?php if ($year === 'all') : ?>
-                                    <th class="text-center"><?= $student->year_level . ordinal($student->year_level) . ' Year'; ?></th>
-                                <?php endif; ?>
-                                <td class="text-center"><?= strtoupper($student->program_code); ?></td>
-                                <td class="text-center"><?= $student->is_enrolled ? 'Yes' : 'No'; ?></td>
-                                <td class="text-center">
-                                    <div class="btn-group">
-                                        <button
-                                                type="button"
-                                                class="btn btn-primary btn-icon rounded-pill dropdown-toggle hide-arrow btn-sm"
-                                                data-bs-toggle="dropdown"
-                                                aria-expanded="false"
-                                        >
-                                            <i class="bx bx-dots-vertical-rounded"></i>
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-end">
-                                            <li><a class="dropdown-item"
-                                                   href="<?= url_to('students.profile.index', $student->user_id) ?>">Update
-                                                    Profile</a></li>
-                                            <li><a class="dropdown-item" href="javascript:void(0);">Enroll Student</a>
-                                            </li>
-                                            <li>
-                                                <hr class="dropdown-divider"/>
-                                            </li>
-                                            <li><a class="dropdown-item" href="javascript:void(0);">Delete</a></li>
-                                        </ul>
-                                    </div>
+                                <td rowspan="5">
+                                    <span>No data</span>
                                 </td>
                             </tr>
+<<<<<<< HEAD
                         <?php endforeach; ?>    
+=======
+                        <?php endif; ?>
+>>>>>>> dbe32bbbe2b7249d2e6f6622b2e921be52852268
                         </tbody>
                     </table>
                 </div>
