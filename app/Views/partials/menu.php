@@ -42,7 +42,6 @@
             </ul>
         </li>
 
-<<<<<<< HEAD
         <!-- Monitoring System -->
        <li class="menu-item">
               <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -83,9 +82,8 @@
 
         <!-- Students menu -->
 
-=======
         <!-- Students menu -->
->>>>>>> dbe32bbbe2b7249d2e6f6622b2e921be52852268
+
         <?php if (auth()->user()->inGroup('admin')): ?>
             <?= $this->include('partials/menu-students')  ;?>
         <?php endif; ?>

@@ -25,10 +25,14 @@ class MonitoringSystem extends BaseController
 
 
     public function modules(){
+        
         $model = model(ModulesModel::class);
 
-        $data = $model->findall(); 
-        
+        $list = $model->findAll();
+
+        foreach ($list as $key) {
+            $data = $model->getModuleDetails($key['code']); 
+        }
 
         return view('monitoring/modules', [
             'list' => $data
@@ -41,16 +45,15 @@ class MonitoringSystem extends BaseController
     }
     
 
-    public function studentsList(int|string $module_id): string{
+    public function studentsList(int|string $module_id, $name): string{
 
         $module = model(ModuleStudentsModel::class);
 
         $list = $module->getStudentList($module_id);
-        
-        
 
         return view('monitoring/student-list', [
-            'module_list' => $list
+            'module_list' => $list,
+            'name' => $name
 
         ]);
   

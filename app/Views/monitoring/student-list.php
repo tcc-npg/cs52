@@ -8,7 +8,7 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                    
-                    <small class="text-muted float-end"><?= count($module_list); ?> students</small>
+                    <small class="text-muted float-end"><?php echo $name; ?></small>
                 </div>
                 <div class="table-responsive text-nowrap">
                     <table class="table">
