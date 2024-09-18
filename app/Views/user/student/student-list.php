@@ -72,7 +72,11 @@
                                 </td>
                             </tr>
 <<<<<<< HEAD
+<<<<<<< HEAD
                         <?php endforeach; ?>    
+=======
+                        <?php endif; ?>
+>>>>>>> dbe32bbbe2b7249d2e6f6622b2e921be52852268
 =======
                         <?php endif; ?>
 >>>>>>> dbe32bbbe2b7249d2e6f6622b2e921be52852268
