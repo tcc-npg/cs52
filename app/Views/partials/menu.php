@@ -70,7 +70,7 @@
                     </a>
                 </li>
                 <li class="menu-item <?= url_is('user') ? 'active' : ''; ?>">
-                    <a href="<?= url_to('user.index'); ?>" class="menu-link">
+                    <a href="<?= url_to('monitoring.viewData', 1) ; ?>" class="menu-link">
                         <div>Analytics</div>
                     </a>
                 </li>

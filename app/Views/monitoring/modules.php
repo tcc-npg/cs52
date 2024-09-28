@@ -81,7 +81,7 @@
         <?php foreach ($list as $module) : ?>
 
         <div class="col-md-4 p-0">
-            <a href="<?php echo url_to('monitoring.studentsList', $module['id'], $module['name'])?>">
+            <a href="<?php echo url_to('monitoring.studentsList', $module['module_id'], $module['name'])?>">
                 <div class="position-relative p-3 rounded-3 hover-opacity">
                     <div class="text-left fw-bold pt-5 ">
                         <p class="fs-3 mb-0"><?php  echo strtoupper($module['name'])?></p>
