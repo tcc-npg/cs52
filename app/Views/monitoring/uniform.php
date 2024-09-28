@@ -1,5 +1,5 @@
 <?= $this->extend('default'); ?>
-<?= $this->section('pageTitle'); ?>- Uniforms<?= $this->endSection('pageTitle'); ?>
+<?= $this->section('pageTitle'); ?> - Uniforms<?= $this->endSection('pageTitle'); ?>
 <?= $this->section('content'); ?>
 
 
@@ -84,7 +84,15 @@
                                     
                                     
                                     else{
-                                        echo $status;
+                                        if ($status === 'p') {
+                                            echo 'PAID';
+                                        }
+                                        else if ($status === 'c') {
+                                            echo 'CLAIMED/NO PAYMENT';
+                                        }
+                                        else{
+                                            echo 'no record';
+                                        }
                                     }                                    
                                     ?> 
                                     </td>
@@ -112,7 +120,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form>
+                        <form method="POST">
                             <div class="mb-3">
                                 <label for="studentName" class="form-label">student ID</label>
                                 <input type="text" class="form-control" id="moduleName" placeholder="Enter student ID" value="">

@@ -1,18 +1,16 @@
 <?php
 
-<<<<<<< HEAD
+
 
 use App\Controllers\MonitoringSystem;
 
 use App\Controllers\CurriculumController;
 use App\Controllers\InventorySystem\DashboardController;
 use App\Controllers\SettingsController;
+// use App\Controllers\CurriculumController;
+// use App\Controllers\InventorySystem\DashboardController;
+// use App\Controllers\SettingsController;
 
-=======
-use App\Controllers\CurriculumController;
-use App\Controllers\InventorySystem\DashboardController;
-use App\Controllers\SettingsController;
->>>>>>> dbe32bbbe2b7249d2e6f6622b2e921be52852268
 use App\Controllers\StudentsController;
 use App\Controllers\UserController;
 use App\Filters\AdminsOnly;
@@ -42,15 +40,12 @@ $routes->group('user', static function ($routes) {
 $routes->group('students',
     ['filter' => AdminsOnly::class],
     static function ($routes) {
-<<<<<<< HEAD
-
     $routes->get('profile/(:num)', [UserController::class, 'index'], ['as' => 'students.profile.index']);
     $routes->get('list/(:alphanum)', [StudentsController::class, 'list'], [
         'as' => 'students.list',
     ]); 
     
-=======
->>>>>>> dbe32bbbe2b7249d2e6f6622b2e921be52852268
+
         $routes->get('profile/(:num)', [UserController::class, 'index'], ['as' => 'students.profile.index']);
         $routes->get('list/(:alphanum)', [StudentsController::class, 'list'], [
             'as' => 'students.list',
@@ -77,20 +72,19 @@ $routes->group('settings',
 
 $routes->group('curriculum', ['filter' => AdminsOnly::class], function ($routes) {
     $routes->get('/', [CurriculumController::class, 'index'], ['as' => 'curriculum.index']);
-<<<<<<< HEAD
+
     $routes->get('new', [CurriculumController::class, 'new'], ['as' => 'cu  rriculum.new']);
-=======
+
     $routes->get('new', [CurriculumController::class, 'new'], ['as' => 'curriculum.new']);
->>>>>>> dbe32bbbe2b7249d2e6f6622b2e921be52852268
+
     $routes->post('save', [CurriculumController::class, 'save'], ['as' => 'curriculum.save']);
     $routes->get('subjects', [CurriculumController::class, 'subjectsList'], ['as' => 'subjects.list']);
     $routes->get('subjects/update/(:num)', [CurriculumController::class, 'subjectsUpdatePage'], ['as' => 'subjects.updatePage']);
     $routes->post('subjects/update/(:num)', [CurriculumController::class, 'subjectsUpdate'], ['as' => 'subjects.update']);
     $routes->post('subjects/delete/(:num)', [CurriculumController::class, 'subjectsDelete'], ['as' => 'subjects.delete']);
-<<<<<<< HEAD
 
-=======
->>>>>>> dbe32bbbe2b7249d2e6f6622b2e921be52852268
+
+
 });
 
 //monitoring
@@ -98,8 +92,12 @@ $routes->group('monitoring', static function ($routes) {
     $routes->get('/', [MonitoringSystem::class, 'uniform'], ['as' => 'monitoring.uniform']);
     $routes->get('modules', [MonitoringSystem::class, 'modules'], ['as' => 'monitoring.modules']);
     $routes->get('otherPayables', [MonitoringSystem::class,'otherPayables'], ['as' => 'monitoring.otherPayables']);
-    $routes->get('sudentsList/(:num)', [MonitoringSystem::class,'studentsList'], ['as' => 'monitoring.studentsList']);
+    $routes->get('payeeList', [MonitoringSystem::class,'payeeList'], ['as' => 'monitoring.payeeList']);
+    $routes->get('sudentsList/(:num)/(:any)', [MonitoringSystem::class,'studentsList'], ['as' => 'monitoring.studentsList']);
     // DRAFT ROUTE FOR ADDING STUDENTS IN THE UNIFORM LIST
     $routes->post('addStudentInUniform', [MonitoringSystem::class,'addStudentInUniform'], ['as' => 'monitoring.addStudentInUniform']);
+
+    
+    $routes->get('viewData/(:num)', [MonitoringSystem::class,'viewData'], ['as' => 'monitoring.viewData']);
 
 });
