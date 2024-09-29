@@ -89,15 +89,15 @@ $routes->group('curriculum', ['filter' => AdminsOnly::class], function ($routes)
 
 //monitoring
 $routes->group('monitoring', static function ($routes) {
-    $routes->get('/', [MonitoringSystem::class, 'uniform'], ['as' => 'monitoring.uniform']);
+    $routes->get('/', [MonitoringSystem::class, 'uniform'], ['as' => 'monitoring']);
+    $routes->get('uniform', [MonitoringSystem::class, 'uniform'], ['as' => 'monitoring.uniform']);
     $routes->get('modules', [MonitoringSystem::class, 'modules'], ['as' => 'monitoring.modules']);
+    $routes->post('addModule', [MonitoringSystem::class,'addModule'], ['as' => 'monitoring.addModule']);
+
     $routes->get('otherPayables', [MonitoringSystem::class,'otherPayables'], ['as' => 'monitoring.otherPayables']);
     $routes->get('payeeList', [MonitoringSystem::class,'payeeList'], ['as' => 'monitoring.payeeList']);
     $routes->get('sudentsList/(:num)/(:any)', [MonitoringSystem::class,'studentsList'], ['as' => 'monitoring.studentsList']);
-    // DRAFT ROUTE FOR ADDING STUDENTS IN THE UNIFORM LIST
     $routes->post('addStudentInUniform', [MonitoringSystem::class,'addStudentInUniform'], ['as' => 'monitoring.addStudentInUniform']);
-
-    
     $routes->get('viewData/(:num)', [MonitoringSystem::class,'viewData'], ['as' => 'monitoring.viewData']);
 
 });

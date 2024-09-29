@@ -39,6 +39,11 @@ class StudentDetailsModel extends Model
             ->join('user_details', 'user_details.user_id = student_details.user_id')
             ->findAll();
     }
+    public function getStudentsByStudentId(int|string $studentId): array|object|null
+    {
+        return $this->where('student_number', $studentId)
+            ->first();
+    }
 
     protected function touch(array $data): array
     {

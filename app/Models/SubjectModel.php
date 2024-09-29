@@ -35,4 +35,9 @@ class SubjectModel extends Model
             ->where('semester', $semester)
             ->findAll();
     }
+
+    public function getSubjectByCode(int|string $code) {
+        return $this->where('code', $code)
+        ->first();
+    }
 }

@@ -43,23 +43,23 @@
         </li>
 
         <!-- Monitoring System -->
-       <li class="menu-item">
+       <li class="menu-item <?= is_active_menu('monitoring*'); ?>">
               <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons bx bx-dollar -"></i>
                 <div>Payables</div>
             </a>
             <ul class="menu-sub">
-                <li class="menu-item <?= url_is('user') ? 'active' : ''; ?>">
+                <li class="menu-item <?= is_active_menu('monitoring/modules', true) ? 'active' : ''; ?>">
                     <a href="<?= url_to('monitoring.modules'); ?>" class="menu-link">
                         <div>Module</div>
                     </a>
                 </li>
-                <li class="menu-item <?= url_is('user') ? 'active' : ''; ?>">
+                <li class="menu-item <?= is_active_menu('monitoring/uniform', true) ? 'active' : ''; ?>">
                     <a href="<?= url_to('monitoring.uniform'); ?>" class="menu-link">
                         <div>Uniform</div>
                     </a>
                 </li>
-                <li class="menu-item <?= url_is('user') ? 'active' : ''; ?>">
+                <li class="menu-item <?= is_active_menu('monitoring/otherPayables', true) ? 'active' : ''; ?>">
                     <a href="<?= url_to('monitoring.otherPayables'); ?>" class="menu-link">
                         <div>Other Payables</div>
                     </a>
@@ -69,7 +69,7 @@
                         <div>Add Payment</div>
                     </a>
                 </li>
-                <li class="menu-item <?= url_is('user') ? 'active' : ''; ?>">
+                <li class="menu-item <?= strpos(current_url(), 'monitoring/viewData') !== false ? 'active' : ''; ?>">
                     <a href="<?= url_to('monitoring.viewData', 1) ; ?>" class="menu-link">
                         <div>Analytics</div>
                     </a>

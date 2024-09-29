@@ -24,15 +24,6 @@ class UniformsModel extends Model
     
     }
 
-    // NOT YET IMPLMENTED IN THE SYSTEM
-    public function addStudentInUniformList($student_number){
-
-        return $this->insert ('user_id')
-        ->select ('user_id')
-        ->from('stundet_details')
-        ->where('student_number', $student_number);
-    
-    }
 
 
  
