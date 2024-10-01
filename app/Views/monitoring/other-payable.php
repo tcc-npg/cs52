@@ -3,83 +3,94 @@
 <?= $this->section('content'); ?>
 
 <div class="container-xxl flex-grow-1 container-p-y">
-<div class="row">
+    <div class="row">
         <div class="col-xxl  position-relative">
             <div class="card">
-             
+
                 <div class="table-responsive text-nowrap">
                     <table class="table table-hover">
                         <thead>
-                        <tr>
-                        <th>Name</th>
-                        <th>Amount</th>
-                        <th>Deadline</th>
-                        <th>Payees</th>
-                        </tr>
+                            <tr>
+                                <th>Name</th>
+                                <th>Amount</th>
+                                <th>Deadline</th>
+                                <th>Payees</th>
+                            </tr>
                         </thead>
 
                         <tbody class="table-border-bottom-0">
-                            <?php foreach ($list as $payable) : ?>
-                            
-                            <tr class="cursor-pointer"  onclick="window.location='<?= url_to('monitoring.payeeList'); ?>'">
-                        
-                                <td><strong><?= $payable['payable_name']; ?></strong></td>
-                                <td>PHP <?= $payable['amount']; ?></td>
-                                <td><?= $payable['deadline']; ?></td>
-                                <td><?= $payable['payees']; ?></td>
-                                  
-                            </tr> 
-                            
+                            <?php foreach ($list as $payable): ?>
+
+                                <tr class="cursor-pointer"
+                                    onclick="window.location='<?= url_to('monitoring.payeeList'); ?>'">
+
+                                    <td><strong><?= $payable['payable_name']; ?></strong></td>
+                                    <td>PHP <?= $payable['amount']; ?></td>
+                                    <td><?= $payable['deadline']; ?></td>
+                                    <td><?= $payable['payees']; ?></td>
+
+                                </tr>
+
                             <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
-                </div>
             </div>
         </div>
+    </div>
 
 
-        <!-- need to connect to connect get the student nummber and create a querry to the db to get the user_id based from the given student_number -->
-        <button class="btn btn-outline-primary mt-3" data-bs-toggle="modal" data-bs-target="#moduleFormModal">
+    <!-- need to connect to connect get the student nummber and create a querry to the db to get the user_id based from the given student_number -->
+    <button class="btn btn-outline-primary mt-3" data-bs-toggle="modal" data-bs-target="#moduleFormModal">
         Add Payable
-        </button>
+    </button>
 
-        <div class="modal fade" id="moduleFormModal" tabindex="-1" aria-labelledby="moduleFormModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="moduleFormModalLabel">Add Payables</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form>
-                            <div class="mb-3">
-                                <label for="studentName" class="form-label">Payable Name</label>
-                                <input type="text" class="form-control" id="moduleName" placeholder="Enter payable name" value="">
-                            </div> 
-                            <div class="mb-3">
-                                <label for="studentName" class="form-label">Amount</label>
-                                <input type="text" class="form-control" id="moduleName" placeholder="Enter amount" value="">
-                            </div> 
-                            <div class="mb-3">
-                                <label for="studentName" class="form-label">Deadline</label>
-                                <input type="date" class="form-control" id="moduleName"  value="">
-                            </div> 
-                            <div class="mb-3">
-                                <label for="studentName" class="form-label">Payees</label>
-                                <input type="text" class="form-control" id="moduleName" placeholder="Enter payees" value="">
-                            </div> 
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary" value="Add Student">Submit</button>
-                    </div>
-
-                    </form>
+    <div class="modal fade" id="moduleFormModal" tabindex="-1" aria-labelledby="moduleFormModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <form class="modal-content" method="POST" action="">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="moduleFormModalLabel">Add Payables</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-            </div>
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label for="studentName" class="form-label">Payable Name</label>
+                        <input type="text" class="form-control" id="moduleName" placeholder="Enter payable name"
+                            value="" name="payableName">
+                    </div>
+                    <div class="mb-3">
+                        <label for="studentName" class="form-label">Amount</label>
+                        <input type="text" class="form-control" id="moduleName" placeholder="Enter amount" value=""
+                            name="amount">
+                    </div>
+                    <div class="mb-3">
+                        <label for="studentName" class="form-label">Deadline</label>
+                        <input type="date" class="form-control" id="moduleName" value="" name="Dealine">
+                    </div>
+                    <div class="mb-3">
+                        <label for="payees" class="form-label">Payees</label>
+                        <select class="form-control" id="payees" name="payees">
+                            <option value="">Select payees</option>
+                            <option value="1st year">1st Year</option>
+                            <option value="2nd year">2nd Year</option>
+                            <option value="3rd year">3rd Year</option>
+                            <option value="4th year">4th Year</option>
+                            <option value="all">All</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" value="Add Student">Submit</button>
+                </div>
+
+
+            </form>
         </div>
-  </div>
+    </div>
+</div>
 </div>
 
 

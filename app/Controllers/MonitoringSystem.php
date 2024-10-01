@@ -136,6 +136,11 @@ class MonitoringSystem extends BaseController
         ]);
     }
 
+    public function addNewPayable(){
+        $model = model(OtherPayableModel::class);
+        
+    }
+
     public function payeeList()
     {
 
