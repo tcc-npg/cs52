@@ -10,7 +10,7 @@ class CreateNewTableUniforms extends Migration
     public function up()
     {
         $this->forge->addField([
-            'module_id' => [
+            'id' => [
                 'type' => 'int',
                 'constraint' => 11,
                 'unsigned' => true,
@@ -56,7 +56,7 @@ class CreateNewTableUniforms extends Migration
             ]
         ]);
         $this->forge->addForeignKey('user_id', 'users', 'id', '', 'CASCADE');
-        $this->forge->addPrimaryKey('module_id');
+        $this->forge->addPrimaryKey('id');
         $this->forge->createTable('ms_uniforms');
     }
 
