@@ -7,8 +7,10 @@
         <div class="col-xxl">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-
                     <small class="text-muted float-end"><?php echo $name; ?></small>
+                    <button type="button" class="btn" aria-label="More options">
+                        <i class="bx bx-trash" aria-hidden="true"></i>
+                    </button>
                 </div>
                 <div class="table-responsive text-nowrap">
                     <table class="table">

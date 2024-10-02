@@ -16,6 +16,8 @@ use CodeIgniter\HTTP\ResponseInterface;
 class MonitoringSystem extends BaseController
 {
     protected $helpers = ['_url', '_toast'];
+
+    //**************************************************8****** UNNIFORM METHODS********************************************/
     public function uniform()
     {
         $model = model(UniformsModel::class);
@@ -56,17 +58,67 @@ class MonitoringSystem extends BaseController
             'user_id' => $student->user_id
         ]);
 
-        return redirectBackWithToast($updateSuccessMessage, $toastColor, $toastHeader, $toastIcon);
+
+
+
+        // return redirectBackWithToast($updateSuccessMessage, $toastColor, $toastHeader, $toastIcon);
 
     }
 
 
+    public function updateStudentInfo()
+    {
+        $updateSuccessMessage = 'Subject added successfully';
+        $toastHeader = 'Success';
+        $toastColor = 'success';
+        $toastIcon = 'bxs-check-circle';
+       
+        $uniform_model = new UniformsModel();
+
+        // Validate incoming request data
+        if ($this->validate([
+            'shirtSize' => 'required|in_list[xs,s,m,l,xl]', // Assuming shirtSize is an enum
+            'pantSize' => 'required|in_list[xs,s,m,l,xl]', // Assuming pantSize is also an enum
+            'status' => 'permit_empty|in_list[p,c]', // Status can be null, if null mean there is record but no payment
+            'id' => 'required|integer'
+        ])) {
+            // Get form data
+            $formData = $this->request->getPost();
+
+            $data = [
+                'shirt_size' => $formData['shirtSize'],
+                'pant_size' => $formData['pantSize'],
+                'status' => $formData['status'] ?? null 
+            ];
+
+            // Call the model to update the student
+            if ($uniform_model->updateStudentInformation($formData['id'], $data)) {
+                return redirectBackWithToast($updateSuccessMessage, $toastColor, $toastHeader, $toastIcon);
+            } else {
+                $updateSuccessMessage = 'Subject not found';
+                $toastColor = 'warning';
+                $toastHeader = 'Warning ';
+                $toastIcon = 'bxs-info-circle';
+            }
+        }
+
+ 
+        
+    }
+
+
+    //*************************************************************** MODULE METHODS ***********************************************************/
     public function modules()
     {
         $module_model = model(ModulesModel::class);
         $list = $module_model->getModuleDetails();
+
+        $subject_model = model(SubjectModel::class);
+        $subject_list = $subject_model->findAll();
+
         return view('monitoring/modules', [
-            'list' => $list
+            'list' => $list,
+            'subject_list' => $subject_list
         ]);
     }
 
@@ -92,16 +144,15 @@ class MonitoringSystem extends BaseController
         }
 
 
-            $module_model = model(ModulesModel::class);
-            $module_model->save([
-                'code' => $subject_code
-            ]);
+        $module_model = model(ModulesModel::class);
+        $module_model->save([
+            'code' => $subject_code
+        ]);
 
-            
-            return redirectBackWithToast($updateSuccessMessage, $toastColor, $toastHeader, $toastIcon);
-        
+
+        return redirectBackWithToast($updateSuccessMessage, $toastColor, $toastHeader, $toastIcon);
+
     }
-
 
     public function studentsList(int|string $module_id, $name): string
     {
@@ -119,60 +170,133 @@ class MonitoringSystem extends BaseController
     }
 
 
+
+
+    //****************************************** OTHER PAYABLE METHODS *****************************************************/
+
     public function otherPayables()
     {
 
         $model = model(OtherPayableModel::class);
 
-        $data = $model->findAll();
-
-        foreach ($data as $key) {
-            $list = $model->getPayableDetails($key['payable_id']);
-        }
-
+        $list = $model->findAll();
 
         return view('monitoring/other-payable', [
             'list' => $list
         ]);
     }
 
-    public function addNewPayable(){
-        $model = model(OtherPayableModel::class);
-        
+
+    public function addNewPayable()
+    {
+        $updateSuccessMessage = 'New Payable Added';
+        $toastHeader = 'Success';
+        $toastColor = 'success';
+        $toastIcon = 'bxs-check-circle';
+        // Apply validation rules
+        if (
+            $this->validate([
+                'payableName' => 'required',
+                'amount' => 'required|decimal',
+                'deadline' => 'required|valid_date',
+                'payees' => 'required'
+            ])
+        ) {
+            $formData = $this->request->getPost();
+            $payableName = $formData['payableName'];
+            $amount = $formData['amount'];
+            $deadline = $formData['deadline'];
+            $payees = $formData['payees'];
+
+            // Save the data
+            $model = model(OtherPayableModel::class);
+            $model->save([
+                'payable_name' => $payableName,
+                'amount' => $amount,
+                'deadline' => $deadline,
+                'payees' => $payees
+            ]);
+
+            // Redirect or show success message
+            return redirectBackWithToast($updateSuccessMessage, $toastColor, $toastHeader, $toastIcon);
+        } else {
+            // Return validation errors
+            $updateSuccessMessage = 'INVALID INPUTS';
+            $toastColor = 'warning';
+            $toastHeader = 'Warning ';
+            $toastIcon = 'bxs-info-circle';
+
+            return redirectBackWithToast($updateSuccessMessage, $toastColor, $toastHeader, $toastIcon);
+        }
     }
 
-    public function payeeList()
+
+    public function payeeList($payable_id)
     {
 
-        $model = model(OtherPayableModel::class);
+        $payable_model = model(OtherPayableModel::class);
 
-        $data = $model->findAll();
+        $list = $payable_model->find($payable_id);
+        $amount = $list['amount'];
 
-        foreach ($data as $key) {
-            $list = $model->getPayableDetails($key['payable_id']);
-            $name = $key['payable_name'];
+        $year = '';
+        switch ($list['payees']) {
+            case '1st':
+                $year = 1;
+                break;
+            case '2nd':
+                $year = 2;
+                break;
+            case '3rd':
+                $year = 3;
+                break;
+            case '4th':
+                $year = 4;
+                break;
+            default:
+                $year = 'all';
+
         }
+        ;
+
+        $student_model = model(StudentDetailsModel::class);
+
+        $students = $student_model->getStudentsByYear($year);
 
         return view('monitoring/payee-list', [
-            'list' => $list,
-            'name' => $name
+            'list' => $students,
+            'amount' => $amount
+
         ]);
+
+
     }
 
 
 
 
+    //******************************* ANALYTICS METHODS *******************************************/
 
-
-    public function viewData(int|string $module_id)
+    public function viewData($module_id)
     {
 
-        $module = model(ModuleStudentsModel::class);
+        $student_model = model(ModuleStudentsModel::class);
+        $module_model = model(ModulesModel::class);
+        $uniform_model = model(UniformsModel::class);
 
-        $data = $module->getStudentList($module_id);
+
+        // $uniforms = $uniform_model->findAll();
+        $students = $student_model->getStudentList($module_id);
+        $modules = $module_model->findAll();
+
+        // print_r($uniforms);
+        // exit;
+
+        
 
         return view('monitoring/analytics', [
-            'module_details' => $data
+            'students' => $students,
+            'modules' => $modules
 
         ]);
     }

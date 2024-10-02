@@ -69,8 +69,8 @@
                         <div>Add Payment</div>
                     </a>
                 </li>
-                <li class="menu-item <?= strpos(current_url(), 'monitoring/viewData') !== false ? 'active' : ''; ?>">
-                    <a href="<?= url_to('monitoring.viewData', 1) ; ?>" class="menu-link">
+                <li class="menu-item <?= is_active_menu( 'monitoring/viewData', true) ? 'active' : ''; ?>">
+                    <a href="<?= url_to('monitoring.viewData', 12) ; ?>" class="menu-link">
                         <div>Analytics</div>
                     </a>
                 </li>

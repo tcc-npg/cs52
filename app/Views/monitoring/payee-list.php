@@ -8,7 +8,7 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
 
-                    <small class="text-muted float-end"><?php echo $name; ?></small>
+                    <small class="text-muted float-end"><?php echo 'sdads'; ?></small>
                 </div>
                 <div class="table-responsive text-nowrap">
                     <table class="table">
@@ -24,28 +24,28 @@
                         <tbody class="table-border-bottom-0">
                             <?php foreach ($list as $student): ?>
                                 <tr>
-                                    <td><strong><?= $student['first_name'] . ' ' . $student['last_name']; ?></strong></td>
-                                    <td class="text-center"><?= strtoupper($student['year_level']); ?></td>
+                                    <td><strong><?= $student->first_name . ' ' . $student->last_name; ?></strong></td>
+                                    <td class="text-center"><?= strtoupper($student->year_level); ?></td>
                                     <td class="text-center">0</td>
                                     <td class="text-center">
                                         <?php
-                                        $balance = $student['amount'] - $student['payment'];
+                                        $balance = $amount - $student->payment;
                                         echo $balance
                                             ?>
 
                                     </td>
                                     <td class="text-center">
-                                        <?php $status = $student['status'];
+                                        <?php $status = $student->status;
 
                                         if ($status === null) {
-                                            echo 'no reocrd';
+                                            echo 'no payment';
                                         } else {
                                             if ($status === 'p') {
                                                 echo 'PAID';
                                             } else if ($status === 'c') {
                                                 echo 'CLAIMED/NO PAYMENT';
                                             } else {
-                                                echo 'no record';
+                                                echo 'no payment';
                                             }
                                         }
                                         ?>

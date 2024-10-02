@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 class ModuleStudentsModel extends Model
 {
     protected $table            = 'ms_module_students';
-    protected $primaryKey       = 'id';
+    protected $primaryKey       = 'module_id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
        

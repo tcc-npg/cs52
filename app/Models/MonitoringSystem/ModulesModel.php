@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 class ModulesModel extends Model
 {
     protected $table = 'ms_modules';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'module_id';
     protected $useAutoIncrement = true;
 
     protected $allowedFields = ['code'];

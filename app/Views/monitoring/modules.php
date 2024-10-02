@@ -38,14 +38,20 @@
         <div class="modal-dialog">
             <form class="modal-content" method="POST" action="<?= url_to('monitoring.addModule'); ?>">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="moduleFormModalLabel">Module Information Form</h5>
+                    <h5 class="modal-title" id="moduleFormModalLabel">Add New Module</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="subjectCode" class="form-label">Subject Code</label>
-                        <input type="text" class="form-control" id="subjectCode" placeholder="Enter subject code"
-                            name='subjectCode'>
+
+                        <label for="subjectCode" class="form-label">Subjects</label>
+
+                        <select class="form-control" id="subjectCode" name="subjectCode">
+                            <option value="" disabled selected>Please select a subject</option>
+                            <?php foreach ($subject_list as $subject): ?>
+                                <option><?= $subject->code ?></option>
+                            <?php endforeach; ?>
+                        </select>   
                     </div>
                 </div>
                 <div class="modal-footer">

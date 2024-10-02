@@ -3,6 +3,18 @@
 <?= $this->section('content'); ?>
 
 <div class="container-xxl flex-grow-1 container-p-y">
+    <?php if (session('update_successful')): ?>
+
+        <?= showToast(); ?>
+
+        <?= $this->section('nonceScript'); ?>
+        <script>
+            const toastPlacement = new bootstrap.Toast(document.querySelector('#update_successful_toast'));
+            toastPlacement.show();
+        </script>
+        <?= $this->endSection('nonceScript'); ?>
+
+    <?php endif; ?>
     <div class="row">
         <div class="col-xxl  position-relative">
             <div class="card">
@@ -21,8 +33,10 @@
                         <tbody class="table-border-bottom-0">
                             <?php foreach ($list as $payable): ?>
 
+
+
                                 <tr class="cursor-pointer"
-                                    onclick="window.location='<?= url_to('monitoring.payeeList'); ?>'">
+                                    onclick="window.location='<?= url_to('monitoring.payeeList', $payable['payable_id']); ?>'">
 
                                     <td><strong><?= $payable['payable_name']; ?></strong></td>
                                     <td>PHP <?= $payable['amount']; ?></td>
@@ -48,26 +62,26 @@
     <div class="modal fade" id="moduleFormModal" tabindex="-1" aria-labelledby="moduleFormModalLabel"
         aria-hidden="true">
         <div class="modal-dialog">
-            <form class="modal-content" method="POST" action="">
+            <form class="modal-content" method="POST" action="<?= url_to('monitoring.addNewPayable'); ?>">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="moduleFormModalLabel">Add Payables</h5>
+                    <h5 class="modal-title" id="oherPayableFormModalLabel">Add Payables</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
 
                     <div class="mb-3">
-                        <label for="studentName" class="form-label">Payable Name</label>
-                        <input type="text" class="form-control" id="moduleName" placeholder="Enter payable name"
-                            value="" name="payableName">
+                        <label for="payableName" class="form-label">Payable Name</label>
+                        <input type="text" class="form-control" id="payableName" placeholder="Enter payable name"
+                            name="payableName">
                     </div>
                     <div class="mb-3">
-                        <label for="studentName" class="form-label">Amount</label>
-                        <input type="text" class="form-control" id="moduleName" placeholder="Enter amount" value=""
+                        <label for="amount" class="form-label">Amount</label>
+                        <input type="text" class="form-control" id="amount" placeholder="Enter amount" value=""
                             name="amount">
                     </div>
                     <div class="mb-3">
-                        <label for="studentName" class="form-label">Deadline</label>
-                        <input type="date" class="form-control" id="moduleName" value="" name="Dealine">
+                        <label for="deadline" class="form-label">Deadline</label>
+                        <input type="date" class="form-control" id="deadline" value="" name="deadline">
                     </div>
                     <div class="mb-3">
                         <label for="payees" class="form-label">Payees</label>

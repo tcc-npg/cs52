@@ -10,12 +10,13 @@
                 data-bs-toggle="dropdown" aria-expanded="false">
                 Select Module
             </button>
+            
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                <li><a class="dropdown-item" href="#">2024</a></li>
-                <li><a class="dropdown-item" href="#">2023</a></li>
-                <li><a class="dropdown-item" href="#">2022</a></li>
-                <li><a class="dropdown-item" href="#">2021</a></li>
+            <?php foreach ($modules as $module) : ?>
+                <li><a class="dropdown-item" href="<?= url_to('monitoring.viewData', $module['module_id']) ; ?>"> <?= $module['code'] ?></a></li>
+                <?php endforeach; ?>
             </ul>
+            
         </div>
     </div>
 
@@ -47,12 +48,12 @@
 $paid = 0;
 $claimed = 0;
 
-foreach ($module_details as $key):
+foreach ($students as $student):      
     $total_students += 1;
-    if ($key['status'] == 'p') {
+    if ($student['status'] == 'p') {
         $paid++;
     }
-    if ($key['status'] == 'c') {
+    if ($student['status'] == 'c') {
         $claimed++;
     }
 

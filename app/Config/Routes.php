@@ -91,13 +91,21 @@ $routes->group('curriculum', ['filter' => AdminsOnly::class], function ($routes)
 $routes->group('monitoring', static function ($routes) {
     $routes->get('/', [MonitoringSystem::class, 'uniform'], ['as' => 'monitoring']);
     $routes->get('uniform', [MonitoringSystem::class, 'uniform'], ['as' => 'monitoring.uniform']);
+    $routes->post('addStudentInUniform', [MonitoringSystem::class,'addStudentInUniform'], ['as' => 'monitoring.addStudentInUniform']);
+    $routes->post('updateStudentInfo', [MonitoringSystem::class,'updateStudentInfo'], ['as'=> 'monitoring.updateStudentInfo']);
+
+
     $routes->get('modules', [MonitoringSystem::class, 'modules'], ['as' => 'monitoring.modules']);
     $routes->post('addModule', [MonitoringSystem::class,'addModule'], ['as' => 'monitoring.addModule']);
+    $routes->get('sudentsList/(:num)/(:any)', [MonitoringSystem::class,'studentsList'], ['as' => 'monitoring.studentsList']);
+    $routes->get('listSubjects', [MonitoringSystem::class,'listSubjects'], ['as'=> 'monitoring.listSubjects']);
+    
 
     $routes->get('otherPayables', [MonitoringSystem::class,'otherPayables'], ['as' => 'monitoring.otherPayables']);
-    $routes->get('payeeList', [MonitoringSystem::class,'payeeList'], ['as' => 'monitoring.payeeList']);
-    $routes->get('sudentsList/(:num)/(:any)', [MonitoringSystem::class,'studentsList'], ['as' => 'monitoring.studentsList']);
-    $routes->post('addStudentInUniform', [MonitoringSystem::class,'addStudentInUniform'], ['as' => 'monitoring.addStudentInUniform']);
+    $routes->post('addNewPayable', [MonitoringSystem::class,'addNewPayable'], ['as'=> 'monitoring.addNewPayable']);
+    $routes->get('payeeList/(:num)', [MonitoringSystem::class,'payeeList'], ['as' => 'monitoring.payeeList']);
+
+    
     $routes->get('viewData/(:num)', [MonitoringSystem::class,'viewData'], ['as' => 'monitoring.viewData']);
 
 });
