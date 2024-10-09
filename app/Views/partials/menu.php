@@ -49,7 +49,7 @@
                 <div>Payables</div>
             </a>
             <ul class="menu-sub">
-                <li class="menu-item <?= is_active_menu('monitoring/modules', true) ? 'active' : ''; ?>">
+                <li class="menu-item <?= strpos(current_url(), 'monitoring/modules') !== false ? 'active' : ''; ?>">
                     <a href="<?= url_to('monitoring.modules'); ?>" class="menu-link">
                         <div>Module</div>
                     </a>
@@ -69,8 +69,8 @@
                         <div>Add Payment</div>
                     </a>
                 </li>
-                <li class="menu-item <?= strpos(current_url(), 'monitoring/viewData') !== false ? 'active' : ''; ?>">
-                    <a href="<?= url_to('monitoring.viewData', 1) ; ?>" class="menu-link">
+                <li class="menu-item <?= strpos(current_url(), 'monitoring/viewData/') !== false ? 'active' : ''; ?>">
+                    <a href="<?= url_to('monitoring.viewData', 1    ) ; ?>" class="menu-link">
                         <div>Analytics</div>
                     </a>
                 </li>
