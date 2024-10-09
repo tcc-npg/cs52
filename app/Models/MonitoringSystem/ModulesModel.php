@@ -10,14 +10,14 @@ class ModulesModel extends Model
     protected $primaryKey = 'module_id';
     protected $useAutoIncrement = true;
 
-    protected $allowedFields = ['code'];
+    protected $allowedFields = ['code', 'amount'];
     protected $returnType = 'array';
 
     public function getModuleDetails()
     {
 
 
-        return $this->select(' ms_modules.module_id, b.name, b.code, b.description')
+        return $this->select(' ms_modules.module_id, ms_modules.amount, b.name, b.code, b.description')
             ->join('subjects b', 'ms_modules.code = b.code')
             ->findAll();
     }

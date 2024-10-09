@@ -53,6 +53,22 @@
                             <?php endforeach; ?>
                         </select>   
                     </div>
+                    <div class="mb-3">
+                        <label for="payees" class="form-label">Select Year Level</label>
+                        <select class="form-control" id="payees" name="yearLevel">
+                            <option value="" disabled selected>Select year level</option>
+                            <option value="1st">1st Year</option>
+                            <option value="2nd">2nd Year</option>
+                            <option value="3rd">3rd Year</option>
+                            <option value="4th">4th Year</option>
+                            <option value="all">All</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">Amount</label>
+                        <input type="number" min='0' class="form-control" id="amount" placeholder="Enter amount" value=""
+                            name="amount">
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -68,7 +84,7 @@
             <?php foreach ($list as $module): ?>
 
                 <div class="col-md-4 p-1">
-                    <a href="<?php echo url_to('monitoring.studentsList', $module['module_id'], $module['name']) ?>">
+                    <a href="<?php echo url_to('monitoring.studentsList', $module['module_id'], $module['name'], $module['amount']) ?>">
                         <div
                             class="position-relative p-3 rounded-3 d-flex flex-column justify-content-end h-75 bg-light hover-opacity border border-primary m-0">
                             <div class="text-left fw-bold pt-5">
