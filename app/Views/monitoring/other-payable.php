@@ -24,9 +24,9 @@
                         <thead>
                             <tr>
                                 <th>Name</th>
-                                <th>Amount</th>
-                                <th>Deadline</th>
-                                <th>Payees</th>
+                                <th class="text-center">Amount</th>
+                                <th class="text-center">Deadline</th>
+                                <th class="text-center">Payees</th>
                             </tr>
                         </thead>
 
@@ -36,12 +36,12 @@
 
 
                                 <tr class="cursor-pointer"
-                                    onclick="window.location='<?= url_to('monitoring.payeeList', $payable['payable_id'], $payable['amount']); ?>'">
+                                    onclick="window.location='<?= url_to('monitoring.payeeList', $payable['payable_id'], 'payable'); ?>'">
 
                                     <td><strong><?= $payable['payable_name']; ?></strong></td>
-                                    <td>PHP <?= $payable['amount']; ?></td>
-                                    <td><?= $payable['deadline']; ?></td>
-                                    <td><?= $payable['payees']; ?></td>
+                                    <td class="text-center">PHP <?= $payable['amount']; ?></td>
+                                    <td class="text-center"><?= $payable['deadline']; ?></td>
+                                    <td class="text-center"><?= $payable['payees']; ?></td>
 
                                 </tr>
 

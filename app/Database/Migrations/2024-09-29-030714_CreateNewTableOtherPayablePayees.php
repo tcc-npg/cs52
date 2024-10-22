@@ -46,10 +46,10 @@ class CreateNewTableOtherPayablePayees extends Migration
             ]
         ]);
 
-        $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE');
-        $this->forge->addForeignKey('payable_id', 'ms_other_payables', 'payable_id', 'CASCADE');
+        $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('payable_id', 'ms_other_payables', 'payable_id', 'CASCADE', 'CASCADE');
 
-        $this->forge->addPrimaryKey(['payable_id', 'user_id']);
+        $this->forge->addPrimaryKey(['user_id', 'payable_id']);
         $this->forge->createTable('ms_payable_payee');
     }
 

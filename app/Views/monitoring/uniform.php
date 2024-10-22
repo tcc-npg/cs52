@@ -24,12 +24,13 @@
                     <table class="table">
                         <thead>
                             <tr>
+                                <th>Student Number</th>
                                 <th>Name</th>
-                                <th class="text-center">Student ID</th>
                                 <th class="text-center">Sex</th>
                                 <th class="text-center">Blouse/Polo</th>
                                 <th class="text-center">Pants</th>
-                                <th class="text-center">Payment</th>
+                                <th class="text-center">Paid Amount</th>
+                                <th class="text-center">Last Payment Date</th>
                                 <th class="text-center">Balance</th>
                                 <th class="text-center">Status</th>
                                 <th class="text-center">Actions</th>
@@ -37,10 +38,67 @@
                             </tr>
                         </thead>
                         <tbody class="table-border-bottom-0">
-                            <?php foreach ($list as $student): ?>
+                            <?php foreach ($list as $student_details):
+                                $student = $student_details['students'];
+                                $payments = $student_details['payments'];
+
+                                $uniform_id = $student['id'];
+
+                                $sizes = [$student['shirt_size'], $student['pants_size']];
+                                $shirt_size = "";
+                                $pant_size = "";
+
+
+                                if ($student['shirt_size'] === null && $student['pants_size'] === null) {
+                                    $shirt_size = 'edit size';
+                                    $pant_size = 'edit size';
+
+                                } else {
+                                    foreach ($sizes as $size) {
+
+                                        $holder = '';
+                                        switch ($size) {
+                                            case 'xs':
+                                                $holder = "Extra Small";
+                                                break;
+                                            case "s":
+                                                $holder = "Small";
+                                                break;
+                                            case "m":
+                                                $holder = "Medium";
+                                                break;
+                                            case "l":
+                                                $holder = "Large";
+                                                break;
+                                            case "xl":
+                                                $holder = "Extra Large";
+                                                break;
+                                        }
+                                        if ($size === $student['shirt_size']) {
+                                            $shirt_size = $holder;
+                                        } else {
+                                            $pant_size = $holder;
+                                        }
+                                    }
+                                }
+
+
+                                $totalPayment = 0; // Initialize total payment
+                                $paymentDetails = []; // Array to hold individual payment details
+                                $paymentDates = []; // Array to hold payment dates
+                            
+                                // Calculate total payment for the student and prepare details for display
+                                if (!empty($payments)) {
+                                    foreach ($payments as $payment) {
+                                        $totalPayment += $payment['amount']; // Sum up all payments
+                                        $paymentDetails[] = 'Amount: ' . number_format($payment['amount'], 2); // Format individual payment
+                                        $paymentDates[] = date('M d, Y', strtotime($payment['payment_date'])); // Format payment date
+                                    }
+                                }
+                                ?>
                                 <tr>
+                                    <td><?= $student['student_number']; ?></td>
                                     <td><?= $student['first_name'] . ' ' . $student['last_name']; ?></td>
-                                    <td class="text-center"><?= $student['student_number']; ?></td>
 
                                     <td class="text-center">
                                         <?php $sex = (strtoupper($student['gender']));
@@ -55,64 +113,21 @@
 
 
                                     <td class="text-center">
-                                        <!-- NOT FINAL: Need to add dynamic dropdown menu for sizes (xs,s,m,l,xl) that will be inserted to uniforms table -->
-                                        <?php $size = $student['shirt_size'];
-
-                                        if ($size === null) {
-                                            echo 'edit size';
-                                        } else {
-                                            switch ($size) {
-                                                case ('xs'):
-                                                    echo "Extra Small";
-                                                    break;
-                                                case ("s"):
-                                                    echo "Small";
-                                                    break;
-                                                case ("m"):
-                                                    echo "Medium";
-                                                    break;
-                                                case ("l"):
-                                                    echo "Large";
-                                                    break;
-                                                case ("xl"):
-                                                    echo "Extra Large";
-                                                    break;
-                                            }
-                                        }
-                                        ?>
+                                        <?php echo !empty($shirt_size) ? $shirt_size : 'edit size'; ?>
                                     </td>
                                     <td class="text-center">
-                                        <!-- NOT FINAL: Need to add dynamic dropdown menu for sizes (xs,s,m,l,xl) that will be inserted to uniforms table -->
-                                        <?php $size = $student['pants_size'];
-
-                                        if ($size === null) {
-                                            echo 'edit size';
-                                        } else {
-                                            switch ($size) {
-                                                case ('xs'):
-                                                    echo "Extra Small";
-                                                    break;
-                                                case ("s"):
-                                                    echo "Small";
-                                                    break;
-                                                case ("m"):
-                                                    echo "Medium";
-                                                    break;
-                                                case ("l"):
-                                                    echo "Large";
-                                                    break;
-                                                case ("xl"):
-                                                    echo "Extra Large";
-                                                    break;
-                                            }
-                                        }
-                                        ?>
+                                        <?php echo !empty($pant_size) ? $pant_size : 'edit size'; ?>
                                     </td>
-                                    <td class="text-center"><?= $student['payment']; ?></td>
-                                    <td class="text-center"> <?php
-                                    $balance = $student['amount'] - $student['payment'];
-                                    echo $balance
-                                        ?>
+
+                                    <td class="text-center">
+                                        <?= !empty($paymentDetails) ? implode('<br>', $paymentDetails) : 'No Payment'; ?>
+                                    </td>
+                                    <td class="text-center">
+                                        <?= !empty($paymentDates) ? implode('<br>', $paymentDates) : 'No Payment'; ?>
+                                    </td>
+                                    <td class="text-center">
+                                        <?php $balance = $student['amount'] - $totalPayment; ?>
+                                        <?= $balance > 0 ? number_format($balance, 2) : 'No Balance'; ?>
                                     </td>
                                     <td class="text-center">
                                         <?php $status = $student['status'];
@@ -131,15 +146,19 @@
                                         ?>
                                     </td>
                                     <td class="text-center">
-                                        <button class="btn btn-edit" data-bs-toggle="modal" data-bs-target="#editFormModal"
-                                            data-id="<?= $student['id']; ?>">
-                                            <i class='bx bx-edit'></i></button>
-                                        <!-- MODAL FORM FOR EDITTING STUDENT INFORMATION -->
-                                        <div class="modal fade" id="editFormModal" tabindex="-1"
-                                            aria-labelledby="moduleFormModalLabel" aria-hidden="true">
+                                        <!-- Edit Button -->
+                                        <button class="btn btn-edit" data-bs-toggle="modal"
+                                            data-bs-target="#editFormModal<?= $student['user_id']; ?>">
+                                            <i class='bx bx-edit'></i>
+                                        </button>
+
+                                        <!-- MODAL FORM FOR EDITING STUDENT INFORMATION -->
+                                        <div class="modal fade" id="editFormModal<?= $student['user_id']; ?>" tabindex="-1"
+                                            aria-labelledby="moduleFormModalLabel<?= $student['user_id']; ?>"
+                                            aria-hidden="true">
                                             <div class="modal-dialog">
                                                 <form class="modal-content" method="POST"
-                                                    action="<?= url_to('monitoring.updateStudentInfo'); ?>">
+                                                    action="<?= url_to('monitoring.updateStudentInfo', $student['user_id'], $student['id']); ?>">
                                                     <div class="modal-header">
                                                         <h5 class="modal-title" id="moduleFormModalLabel">Edit Student Info
                                                         </h5>
@@ -148,14 +167,17 @@
                                                     </div>
                                                     <div class="modal-body text-start">
                                                         <div class="mb-3">
-                                                            <!-- Hidden Input to store userId -->
-                                                            <input type="hidden" class="form-control" id="id" name="id"
-                                                                value="<?= $student['id']; ?>">
+                                                            <!-- Hidden Input to store id and user_id -->
+                                                            <input type="hidden" class="form-control" id="editStudentId"
+                                                                name="id">
+                                                            <input type="hidden" class="form-control" id="editUserId"
+                                                                name="user_id">
 
                                                             <label for="poloSize" class="form-label">Polo/Blouse
                                                                 Size</label>
                                                             <select class="form-control" id="poloSize" name="shirtSize">
-                                                                <option value="" disabled selected>Select Polo/Blouse Size
+                                                                <option value="" disabled selected>
+                                                                    <?php echo !empty($shirt_size) ? 'Selected Polo/Blouse Size: ' . $shirt_size : 'Select Polo/Blouse Size'; ?>
                                                                 </option>
                                                                 <option value="xs">Extra Small</option>
                                                                 <option value="s">Small</option>
@@ -167,7 +189,8 @@
                                                         <div class="mb-3">
                                                             <label for="pantSize" class="form-label">Pant Size</label>
                                                             <select class="form-control" id="pantSize" name="pantSize">
-                                                                <option value="" disabled selected>Select Pants Size
+                                                                <option value="" disabled selected>
+                                                                    <?php echo !empty($pant_size) ? 'Selected Pants Size: ' . $pant_size : 'Select Pants Size'; ?>
                                                                 </option>
                                                                 <option value="xs">Extra Small</option>
                                                                 <option value="s">Small</option>
@@ -177,10 +200,11 @@
                                                             </select>
                                                         </div>
                                                         <div class="mb-3">
-                                                        <label for="status" class="form-label"
+                                                            <label for="payment" class="form-label"
                                                                 name="payment">Payment</label>
                                                             <input type="number" class="form-control" id="payment"
-                                                                name="payment" placeholder="Enter payment amount" min="0">
+                                                                name="payment" placeholder="Enter payment amount" min="0"
+                                                                max='<?= $balance ?>'>
                                                             <label for="status" class="form-label">Status</label>
                                                             <select class="form-control" id="status" name="status">
                                                                 <option value="" disabled selected>Update Status</option>
@@ -199,39 +223,38 @@
                                             </div>
                                         </div>
 
-                                        <button type="button" class="btn btn-delete" data-bs-toggle="modal"
-                                            data-bs-target="#deleteModal" data-student-id="<?= $student['id']; ?>">
+                                        <!-- Delete Button -->
+                                        <!-- Delete Button -->
+                                        <button type="button" class="btn" aria-label="More options" data-bs-toggle="modal"
+                                            data-bs-target="#deleteStudentModal<?= $uniform_id; ?>">
                                             <i class='bx bx-trash'></i>
                                         </button>
 
-                                        <div class="modal fade" id="deleteModal" tabindex="-1"
-                                            aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                        <!-- Modal for Deleting Student -->
+                                        <div class="modal fade" id="deleteStudentModal<?= $uniform_id; ?>" tabindex="-1"
+                                            aria-labelledby="deleteStudentLabel<?= $uniform_id; ?>" aria-hidden="true">
                                             <div class="modal-dialog">
-                                                <form class="modal-content" id="deleteForm" method="POST"
-                                                    action="<?php echo url_to('monitoring.deleteStudentInUniformList', $student['id']); ?>">
+                                                <form class="modal-content" method="POST"
+                                                    action="<?= url_to('monitoring.deleteStudentInUniformList', $uniform_id); ?>">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                                                        <h5 class="modal-title" id="deleteStudentLabel<?= $uniform_id; ?>">
+                                                            Confirm Delete</h5>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                             aria-label="Close"></button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        Are you sure you want to delete this stjdent in the list??
+                                                        Are you sure you want to delete this student from the uniform list?
                                                     </div>
                                                     <div class="modal-footer">
-                                                        <!-- No Button: Closes the Modal -->
                                                         <button type="button" class="btn btn-secondary"
                                                             data-bs-dismiss="modal">No</button>
-
-
-                                                        <input type="hidden" name="moduleId" id="module_id"
-                                                            value=<?= $student['id']; ?>>
-                                                        <button type="submit" class="btn btn-danger" name="">Yes,
-                                                            Delete</button>
-
+                                                        <button type="submit" class="btn btn-danger">Yes, Delete</button>
                                                     </div>
                                                 </form>
                                             </div>
                                         </div>
+
+
                                     </td>
 
                                 </tr>

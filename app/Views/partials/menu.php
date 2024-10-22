@@ -64,13 +64,8 @@
                         <div>Other Payables</div>
                     </a>
                 </li>
-                <li class="menu-item <?= url_is('user') ? 'active' : ''; ?>">
-                    <a href="<?= url_to('user.index'); ?>" class="menu-link">
-                        <div>Add Payment</div>
-                    </a>
-                </li>
                 <li class="menu-item <?= strpos(current_url(), 'monitoring/viewData/') !== false ? 'active' : ''; ?>">
-                    <a href="<?= url_to('monitoring.viewData', 1    ) ; ?>" class="menu-link">
+                    <a href="<?= url_to('monitoring.viewData') ; ?>" class="menu-link">
                         <div>Analytics</div>
                     </a>
                 </li>

@@ -2,7 +2,18 @@
 <?= $this->section('pageTitle'); ?>- Dashboard<?= $this->endSection('pageTitle'); ?>
 <?= $this->section('content'); ?>
 <div class="container-xxl flex-grow-1 container-p-y">
+    <?php if (session('update_successful')): ?>
 
+        <?= showToast(); ?>
+
+        <?= $this->section('nonceScript'); ?>
+        <script>
+            const toastPlacement = new bootstrap.Toast(document.querySelector('#update_successful_toast'));
+            toastPlacement.show();
+        </script>
+        <?= $this->endSection('nonceScript'); ?>
+
+    <?php endif; ?>
     <div class="row">
         <div class="col-xxl">
             <div class="card">
@@ -47,24 +58,44 @@
                             <tr>
                                 <th>Name</th>
                                 <th class="text-center">Year Level</th>
-                                <th class="text-center">Payment</th>
+                                <th class="text-center">Payments</th>
+                                <th class="text-center">Payment Dates</th>
                                 <th class="text-center">Balance</th>
                                 <th class="text-center">Status</th>
                                 <th class="text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody class="table-border-bottom-0">
-                            <?php foreach ($list as $student): ?>
+                            <?php foreach ($list as $payee): ?>
+                                <?php
+                                $student = $payee['payee'];
+                                $payments = $payee['payments'];
+                                $totalPayment = 0; // Initialize total payment
+                                $paymentDetails = []; // Array to hold individual payment details
+                                $paymentDates = []; // Array to hold payment dates
+                            
+                                // Calculate total payment for the student and prepare details for display
+                                if (!empty($payments)) {
+                                    foreach ($payments as $payment) {
+                                        $totalPayment += $payment['amount']; // Sum up all payments
+                                        $paymentDetails[] = 'Amount: ' . number_format($payment['amount'], 2); // Format individual payment
+                                        $paymentDates[] = date('M d, Y', strtotime($payment['payment_date'])); // Format payment date
+                                    }
+                                }
+                                ?>
+
                                 <tr>
                                     <td><strong><?= $student['first_name'] . ' ' . $student['last_name']; ?></strong></td>
-                                    <td class="text-center"><?= strtoupper($student['year_level']); ?></td>
-                                    <td class="text-center"><?= $student['payment']; ?></td>
+                                    <td class="text-center"><?= strtoupper($student['user_id']); ?></td>
                                     <td class="text-center">
-                                        <?php
-                                        $balance = $amount - $student['payment'];
-                                        echo $balance
-                                            ?>
-
+                                        <?= !empty($paymentDetails) ? implode('<br>', $paymentDetails) : 'No Payment'; ?>
+                                    </td>
+                                    <td class="text-center">
+                                        <?= !empty($paymentDates) ? implode('<br>', $paymentDates) : 'No Payment'; ?>
+                                    </td>
+                                    <td class="text-center">
+                                        <?php $balance = $amount - $totalPayment; ?>
+                                        <?= $balance > 0 ? number_format($balance, 2) : 'No Balance'; ?>
                                     </td>
                                     <td class="text-center">
                                         <?php $status = $student['status'];
@@ -83,33 +114,40 @@
                                         ?>
                                     </td>
                                     <td class="text-center">
-                                        <button class="btn btn-edit" data-bs-toggle="modal" data-bs-target="#editFormModal"
-                                            data-id="">
-                                            <i class='bx bx-edit'></i></button>
-                                        <!-- MODAL FORM FOR UDATTING STUDENT STATUS -->
-                                        <div class="modal fade" id="editFormModal" tabindex="-1"
-                                            aria-labelledby="moduleFormModalLabel" aria-hidden="true">
+                                        <button class="btn btn-edit" data-bs-toggle="modal"
+                                            data-bs-target="#editFormModal<?= $student['user_id']; ?>">
+                                            <i class='bx bx-edit'></i>
+                                        </button>
+
+                                        <!-- MODAL FORM FOR UPDATING STUDENT STATUS -->
+                                        <div class="modal fade" id="editFormModal<?= $student['user_id']; ?>" tabindex="-1"
+                                            aria-labelledby="moduleFormModalLabel<?= $student['user_id']; ?>"
+                                            aria-hidden="true">
                                             <div class="modal-dialog">
                                                 <form class="modal-content" method="POST"
-                                                    action="<?= url_to('monitoring.updatePayeeInfo', $student['user_id']); ?>">
+                                                    action="<?= url_to('monitoring.updatePayeeInfo', $student['user_id'], $payable_id); ?>">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title" id="moduleFormModalLabel">Edit Student Info
-                                                        </h5>
+                                                        <h5 class="modal-title"
+                                                            id="moduleFormModalLabel<?= $student['user_id']; ?>">Edit
+                                                            Student Info</h5>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                             aria-label="Close"></button>
                                                     </div>
                                                     <div class="modal-body text-start">
                                                         <div class="mb-3">
-                                                            <label for="status" class="form-label"
-                                                                name="payment">Payment</label>
+                                                            <label for="payment" class="form-label">Payment</label>
                                                             <input type="number" class="form-control" id="payment"
-                                                                name="payment" placeholder="Enter payment amount" min="0">
+                                                                name="payment" placeholder="Enter payment amount" min="0"
+                                                                max="<?= $balance ?>">
                                                             <label for="status" class="form-label">Status</label>
                                                             <select class="form-control" id="status" name="status">
                                                                 <option value="" disabled selected>Update Status</option>
                                                                 <option value="p">Paid</option>
                                                                 <option value="c">Claimed</option>
                                                             </select>
+                                                            <input type="hidden" name="user_id"
+                                                                value="<?= $student['user_id']; ?>">
+                                                            <!-- Hidden input for user_id -->
                                                         </div>
                                                     </div>
                                                     <div class="modal-footer">
@@ -122,7 +160,6 @@
                                             </div>
                                         </div>
 
-
                                         <button type="button" class="btn" aria-label="More options" data-bs-toggle="modal"
                                             data-bs-target="#deleteStudent"><i class='bx bx-trash'></i></button>
 
@@ -130,7 +167,7 @@
                                             aria-labelledby="deleteStudentLabel" aria-hidden="true">
                                             <div class="modal-dialog">
                                                 <form class="modal-content" id="deleteForm" method="POST"
-                                                    action="<?php echo url_to('monitoring.deleteStudentInModuleList', $student['user_id']); ?>">
+                                                    action="<?php echo url_to('monitoring.deleteStudentInPayableList', $student['user_id']); ?>">
                                                     <div class="modal-header">
                                                         <h5 class="modal-title" id="deleteStudentLabel">Confirm Delete</h5>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
@@ -140,20 +177,16 @@
                                                         Are you sure you want to delete this module?
                                                     </div>
                                                     <div class="modal-footer">
-                                                        <!-- No Button: Closes the Modal -->
                                                         <button type="button" class="btn btn-secondary"
                                                             data-bs-dismiss="modal">No</button>
-
-
                                                         <input type="hidden" name="moduleId" id="module_id" value=''>
-                                                        <button type="submit" class="btn btn-danger" name="">Yes,
-                                                            Delete</button>
-
+                                                        <button type="submit" class="btn btn-danger">Yes, Delete</button>
                                                     </div>
                                                 </form>
                                             </div>
                                         </div>
                                     </td>
+
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>

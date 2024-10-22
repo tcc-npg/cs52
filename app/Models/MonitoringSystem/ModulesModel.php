@@ -16,8 +16,7 @@ class ModulesModel extends Model
     public function getModuleDetails()
     {
 
-
-        return $this->select(' ms_modules.module_id, ms_modules.amount, b.name, b.code, b.description')
+        return $this->select(' ms_modules.module_id, ms_modules.amount, b.name, b.code, b.description, b.year_level')
             ->join('subjects b', 'ms_modules.code = b.code')
             ->findAll();
     }

@@ -13,14 +13,18 @@ class UniformsModel extends Model
 
     protected $allowedFields = [
         'user_id',  
-        'amount'
+        'amount',
+        'shirt_size',
+        'pants_size',
+        'status'
+
     ];
 
 
     public function listStudentUniform()
     {
-        return $this->select('b.first_name, b.last_name, c.student_number, b.gender, 
-        ms_uniforms.shirt_size, ms_uniforms.pants_size, ms_uniforms.payment, ms_uniforms.status, ms_uniforms.id, ms_uniforms.amount')
+        return $this->select('b.first_name, b.last_name, c.student_number, b.gender, c.user_id,
+        ms_uniforms.shirt_size, ms_uniforms.pants_size,ms_uniforms.status, ms_uniforms.id, ms_uniforms.amount,')
             ->join('user_details b', 'ms_uniforms.user_id = b.user_id')
             ->join('student_details c', 'ms_uniforms.user_id = c.user_id')
             ->findAll();

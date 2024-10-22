@@ -98,7 +98,7 @@ $routes->group('monitoring', static function ($routes) {
     $routes->get('/', [MonitoringSystem::class, 'uniform'], ['as' => 'monitoring']);
     $routes->get('uniform', [MonitoringSystem::class, 'uniform'], ['as' => 'monitoring.uniform']);
     $routes->post('addStudentInUniform', [MonitoringSystem::class, 'addStudentInUniform'], ['as' => 'monitoring.addStudentInUniform']);
-    $routes->post('updateStudentInfo', [MonitoringSystem::class, 'updateStudentInfo'], ['as' => 'monitoring.updateStudentInfo']);
+    $routes->post('updateStudentInfo/(:num)/(:num)', [MonitoringSystem::class, 'updateStudentInfo'], ['as' => 'monitoring.updateStudentInfo']);
     $routes->post('deleteStudentInUniformList/(:num)', [MonitoringSystem::class, 'deleteStudentInUniformList'], ['as' => 'monitoring.deleteStudentInUniformList']);
     $routes->post('setUniformAmount', [MonitoringSystem::class, 'setUniformAmount'], ['as' => 'monitoring.setUniformAmount']);
 
@@ -107,18 +107,20 @@ $routes->group('monitoring', static function ($routes) {
     $routes->get('sudentsList/(:num)/(:any)/(:any)', [MonitoringSystem::class, 'studentsList'], ['as' => 'monitoring.studentsList']);
     $routes->get('listSubjects', [MonitoringSystem::class, 'listSubjects'], ['as' => 'monitoring.listSubjects']);
     $routes->post('deleteModule', [MonitoringSystem::class, 'deleteModule'], ['as' => 'monitoring.deleteModule']);
-    $routes->post('updateStudentModuleStatus/(:num)', [MonitoringSystem::class, 'updateStudentModuleStatus'], ['as' => 'monitoring.updateStudentModuleStatus']);
+    $routes->post('updateStudentModuleStatus/(:num)/(:num)', [MonitoringSystem::class, 'updateStudentModuleStatus'], ['as' => 'monitoring.updateStudentModuleStatus']);
     $routes->POST('deleteStudentInModuleList/(:num)', [MonitoringSystem::class, 'deleteStudentInModuleList'], ['as' => 'monitoring.deleteStudentInModuleList']);
     $routes->post('addStudentInModuleList', [MonitoringSystem::class, 'addStudentInModuleList'], ['as' => 'monitoring.addStudentInModuleList']);
 
 
     $routes->get('otherPayables', [MonitoringSystem::class, 'otherPayables'], ['as' => 'monitoring.otherPayables']);
     $routes->post('addNewPayable', [MonitoringSystem::class, 'addNewPayable'], ['as' => 'monitoring.addNewPayable']);
-    $routes->get('payeeList/(:num)', [MonitoringSystem::class, 'payeeList'], ['as' => 'monitoring.payeeList']);
-    $routes->post('updatePayeeInfo/(:num)', [MonitoringSystem::class, 'updatePayeeInfo'], ['as' => 'monitoring.updatePayeeInfo']);
+    $routes->get('payeeList/(:num)/(:segment)', [MonitoringSystem::class, 'payeeList'], ['as' => 'monitoring.payeeList']);
+    $routes->post('updatePayeeInfo/(:num)/(:num)', [MonitoringSystem::class, 'updatePayeeInfo'], ['as' => 'monitoring.updatePayeeInfo']);
     $routes->post('deleteOtherPayable', [MonitoringSystem::class, 'deleteOtherPayable'], ['as' => 'monitoring.deleteOtherPayable']);
+    $routes->POST('deleteStudentInPayableList/(:num)', [MonitoringSystem::class, 'deleteStudentInPayableList'], ['as' => 'monitoring.deleteStudentInPayableList']);
+    
 
+    $routes->get('viewData', [MonitoringSystem::class, 'viewData'], ['as' => 'monitoring.viewData']);
 
-    $routes->get('viewData/(:num)', [MonitoringSystem::class, 'viewData'], ['as' => 'monitoring.viewData']);
-
+  
 });
