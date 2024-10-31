@@ -25,7 +25,7 @@
                         <thead>
                             <tr>
                                 <th>Student Number</th>
-                                <th>Name</th>
+                                <th class="text-center">Name</th>
                                 <th class="text-center">Sex</th>
                                 <th class="text-center">Blouse/Polo</th>
                                 <th class="text-center">Pants</th>
@@ -33,7 +33,9 @@
                                 <th class="text-center">Last Payment Date</th>
                                 <th class="text-center">Balance</th>
                                 <th class="text-center">Status</th>
-                                <th class="text-center">Actions</th>
+                                <?php if (auth()->user()->inGroup('admin')): ?>
+                                    <th class="text-center">Actions</th>
+                                <?php endif; ?>
 
                             </tr>
                         </thead>
@@ -55,31 +57,16 @@
 
                                 } else {
                                     foreach ($sizes as $size) {
+                                        $holder = getSize($size);
 
-                                        $holder = '';
-                                        switch ($size) {
-                                            case 'xs':
-                                                $holder = "Extra Small";
-                                                break;
-                                            case "s":
-                                                $holder = "Small";
-                                                break;
-                                            case "m":
-                                                $holder = "Medium";
-                                                break;
-                                            case "l":
-                                                $holder = "Large";
-                                                break;
-                                            case "xl":
-                                                $holder = "Extra Large";
-                                                break;
-                                        }
                                         if ($size === $student['shirt_size']) {
                                             $shirt_size = $holder;
-                                        } else {
+                                        }
+                                        if ($size === $student['pants_size']) {
                                             $pant_size = $holder;
                                         }
                                     }
+
                                 }
 
 
@@ -126,8 +113,7 @@
                                         <?= !empty($paymentDates) ? implode('<br>', $paymentDates) : 'No Payment'; ?>
                                     </td>
                                     <td class="text-center">
-                                        <?php $balance = $student['amount'] - $totalPayment; ?>
-                                        <?= $balance > 0 ? number_format($balance, 2) : 'No Balance'; ?>
+                                        <?= $student['balance'] > 0 ? number_format($student['balance'] , 2) : 'No Balance'; ?>
                                     </td>
                                     <td class="text-center">
                                         <?php $status = $student['status'];
@@ -135,128 +121,127 @@
                                         if ($status === null) {
                                             echo 'no record';
                                         } else {
-                                            if ($status === 'p') {
+                                            if ($status === 'p' ) {
                                                 echo 'PAID';
                                             } else if ($status === 'c') {
-                                                echo 'CLAIMED/NO PAYMENT';
+                                                echo 'CLAIMED | INCOMPLETE';
                                             } else {
                                                 echo 'no record';
                                             }
                                         }
                                         ?>
                                     </td>
-                                    <td class="text-center">
-                                        <!-- Edit Button -->
-                                        <button class="btn btn-edit" data-bs-toggle="modal"
-                                            data-bs-target="#editFormModal<?= $student['user_id']; ?>">
-                                            <i class='bx bx-edit'></i>
-                                        </button>
+                                    <?php if (auth()->user()->inGroup('admin')): ?>
+                                        <td class="text-center">
+                                            <!-- Edit Button -->
+                                            <button class="btn btn-edit" data-bs-toggle="modal"
+                                                data-bs-target="#editFormModal<?= $student['user_id']; ?>">
+                                                <i class='bx bx-edit'></i>
+                                            </button>
 
-                                        <!-- MODAL FORM FOR EDITING STUDENT INFORMATION -->
-                                        <div class="modal fade" id="editFormModal<?= $student['user_id']; ?>" tabindex="-1"
-                                            aria-labelledby="moduleFormModalLabel<?= $student['user_id']; ?>"
-                                            aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <form class="modal-content" method="POST"
-                                                    action="<?= url_to('monitoring.updateStudentInfo', $student['user_id'], $student['id']); ?>">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="moduleFormModalLabel">Edit Student Info
-                                                        </h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                            aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body text-start">
-                                                        <div class="mb-3">
-                                                            <!-- Hidden Input to store id and user_id -->
-                                                            <input type="hidden" class="form-control" id="editStudentId"
-                                                                name="id">
-                                                            <input type="hidden" class="form-control" id="editUserId"
-                                                                name="user_id">
+                                            <!-- MODAL FORM FOR EDITING STUDENT INFORMATION -->
+                                            <div class="modal fade" id="editFormModal<?= $student['user_id']; ?>" tabindex="-1"
+                                                aria-labelledby="moduleFormModalLabel<?= $student['user_id']; ?>"
+                                                aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <form class="modal-content" method="POST"
+                                                        action="<?= url_to('monitoring.updateStudentInfo', $student['user_id'], $student['id']); ?>">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="moduleFormModalLabel">Edit Student Info
+                                                            </h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                                aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body text-start">
+                                                            <div class="mb-3">
+                                                                <!-- Hidden Input to store id and user_id -->
+                                                                <input type="hidden" class="form-control" id="editStudentId"
+                                                                    name="id">
+                                                                <input type="hidden" class="form-control" id="editUserId"
+                                                                    name="user_id">
 
-                                                            <label for="poloSize" class="form-label">Polo/Blouse
-                                                                Size</label>
-                                                            <select class="form-control" id="poloSize" name="shirtSize">
-                                                                <option value="" disabled selected>
-                                                                    <?php echo !empty($shirt_size) ? 'Selected Polo/Blouse Size: ' . $shirt_size : 'Select Polo/Blouse Size'; ?>
-                                                                </option>
-                                                                <option value="xs">Extra Small</option>
-                                                                <option value="s">Small</option>
-                                                                <option value="m">Medium</option>
-                                                                <option value="l">Large</option>
-                                                                <option value="xl">Extra-Large</option>
-                                                            </select>
+                                                                <label for="poloSize" class="form-label">Polo/Blouse
+                                                                    Size</label>
+                                                                <select class="form-control" id="poloSize" name="shirtSize">
+                                                                    <option value="" disabled selected>
+                                                                        <?php echo !empty($shirt_size) ? 'Selected Polo/Blouse Size: ' . $shirt_size : 'Select Polo/Blouse Size'; ?>
+                                                                    </option>
+                                                                    <option value="xs">Extra Small</option>
+                                                                    <option value="s">Small</option>
+                                                                    <option value="m">Medium</option>
+                                                                    <option value="l">Large</option>
+                                                                    <option value="xl">Extra-Large</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label for="pantSize" class="form-label">Pant Size</label>
+                                                                <select class="form-control" id="pantSize" name="pantSize">
+                                                                    <option value="" disabled selected>
+                                                                        <?php echo !empty($pant_size) ? 'Selected Pants Size: ' . $pant_size : 'Select Pants Size'; ?>
+                                                                    </option>
+                                                                    <option value="xs">Extra Small</option>
+                                                                    <option value="s">Small</option>
+                                                                    <option value="m">Medium</option>
+                                                                    <option value="l">Large</option>
+                                                                    <option value="xl">Extra-Large</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label for="payment" class="form-label"
+                                                                    name="payment">Payment</label>
+                                                                <input type="number" class="form-control" id="payment"
+                                                                    name="payment" placeholder="Enter payment amount" min="0"
+                                                                    max='<?= $student['balance'] ?>'>
+                                                                <label for="status" class="form-label">Status</label>
+                                                                <select class="form-control" id="status" name="status">
+                                                                    <option value="" disabled selected>Update Status</option>
+                                                                    <option value="p">Paid</option>
+                                                                    <option value="c">Claimed/Incomplete</option>
+                                                                </select>                   
+                                                            </div>
                                                         </div>
-                                                        <div class="mb-3">
-                                                            <label for="pantSize" class="form-label">Pant Size</label>
-                                                            <select class="form-control" id="pantSize" name="pantSize">
-                                                                <option value="" disabled selected>
-                                                                    <?php echo !empty($pant_size) ? 'Selected Pants Size: ' . $pant_size : 'Select Pants Size'; ?>
-                                                                </option>
-                                                                <option value="xs">Extra Small</option>
-                                                                <option value="s">Small</option>
-                                                                <option value="m">Medium</option>
-                                                                <option value="l">Large</option>
-                                                                <option value="xl">Extra-Large</option>
-                                                            </select>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-bs-dismiss="modal">Close</button>
+                                                            <button type="submit" class="btn btn-primary"
+                                                                value="Submit">Submit</button>
                                                         </div>
-                                                        <div class="mb-3">
-                                                            <label for="payment" class="form-label"
-                                                                name="payment">Payment</label>
-                                                            <input type="number" class="form-control" id="payment"
-                                                                name="payment" placeholder="Enter payment amount" min="0"
-                                                                max='<?= $balance ?>'>
-                                                            <label for="status" class="form-label">Status</label>
-                                                            <select class="form-control" id="status" name="status">
-                                                                <option value="" disabled selected>Update Status</option>
-                                                                <option value="p">Paid</option>
-                                                                <option value="c">Claimed/Incomplete</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">Close</button>
-                                                        <button type="submit" class="btn btn-primary"
-                                                            value="Submit">Submit</button>
-                                                    </div>
-                                                </form>
+                                                    </form>
+                                                </div>
                                             </div>
-                                        </div>
 
-                                        <!-- Delete Button -->
-                                        <!-- Delete Button -->
-                                        <button type="button" class="btn" aria-label="More options" data-bs-toggle="modal"
-                                            data-bs-target="#deleteStudentModal<?= $uniform_id; ?>">
-                                            <i class='bx bx-trash'></i>
-                                        </button>
+                                            <!-- Delete Button -->
+                                            <!-- Delete Button -->
+                                            <button type="button" class="btn" aria-label="More options" data-bs-toggle="modal"
+                                                data-bs-target="#deleteStudentModal<?= $uniform_id; ?>">
+                                                <i class='bx bx-trash'></i>
+                                            </button>
 
-                                        <!-- Modal for Deleting Student -->
-                                        <div class="modal fade" id="deleteStudentModal<?= $uniform_id; ?>" tabindex="-1"
-                                            aria-labelledby="deleteStudentLabel<?= $uniform_id; ?>" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <form class="modal-content" method="POST"
-                                                    action="<?= url_to('monitoring.deleteStudentInUniformList', $uniform_id); ?>">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="deleteStudentLabel<?= $uniform_id; ?>">
-                                                            Confirm Delete</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                            aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        Are you sure you want to delete this student from the uniform list?
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">No</button>
-                                                        <button type="submit" class="btn btn-danger">Yes, Delete</button>
-                                                    </div>
-                                                </form>
+                                            <!-- Modal for Deleting Student -->
+                                            <div class="modal fade" id="deleteStudentModal<?= $uniform_id; ?>" tabindex="-1"
+                                                aria-labelledby="deleteStudentLabel<?= $uniform_id; ?>" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <form class="modal-content" method="POST"
+                                                        action="<?= url_to('monitoring.deleteStudentInUniformList', $uniform_id); ?>">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="deleteStudentLabel<?= $uniform_id; ?>">
+                                                                Confirm Delete</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                                aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                        Are you sure you want to remove student from list?
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-bs-dismiss="modal">No</button>
+                                                            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
                                             </div>
-                                        </div>
-
-
-                                    </td>
-
+                                        </td>
+                                    <?php endif; ?>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -267,68 +252,66 @@
     </div>
 
 
+    <?php if (auth()->user()->inGroup('admin')): ?>
+        <div class="d-flex justify-content-between mb-3">
+            <!-- Add Student Button -->
+            <button class="btn btn-outline-primary mt-3" data-bs-toggle="modal" data-bs-target="#moduleFormModal">
+                Add student
+            </button>
 
-    <!-- need to connect to connect get the student nummber and create a querry to the db to get the user_id based from the given student_number -->
-    <!-- Container to wrap both buttons with flexbox for horizontal alignment -->
-    <div class="d-flex justify-content-between mb-3">
-        <!-- Add Student Button -->
-        <button class="btn btn-outline-primary mt-3" data-bs-toggle="modal" data-bs-target="#moduleFormModal">
-            Add student
-        </button>
-
-        <!-- Set Uniform Total Button -->
-        <button class="btn btn-outline-primary mt-3" data-bs-toggle="modal" data-bs-target="#setTotalModal">
-            Set Uniform Total
-        </button>
-    </div>
-
-    <!-- Add Student Modal -->
-    <div class="modal fade" id="moduleFormModal" tabindex="-1" aria-labelledby="moduleFormModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <form class="modal-content" method="POST" action="<?= url_to('monitoring.addStudentInUniform'); ?>">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="moduleFormModalLabel">Add Student</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="studentId" class="form-label">Student ID</label>
-                        <input type="text" class="form-control" id="studentId" placeholder="Enter student ID"
-                            name="studentId" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </div>
-            </form>
+            <!-- Set Uniform Total Button -->
+            <button class="btn btn-outline-primary mt-3" data-bs-toggle="modal" data-bs-target="#setTotalModal">
+                Set Uniform Total
+            </button>
         </div>
-    </div>
 
-    <!-- Set Uniform Total Modal -->
-    <div class="modal fade" id="setTotalModal" tabindex="-1" aria-labelledby="setTotalModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <form class="modal-content" method="POST" action="<?= url_to('monitoring.setUniformAmount'); ?>">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="setTotalModalLabel">Set Uniform Total Amount</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="totalAmount" class="form-label">Total Amount</label>
-                        <input type="number" class="form-control" id="totalAmount" name="totalAmount"
-                            placeholder="Enter total amount" required>
+        <!-- Add Student Modal -->
+        <div class="modal fade" id="moduleFormModal" tabindex="-1" aria-labelledby="moduleFormModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <form class="modal-content" method="POST" action="<?= url_to('monitoring.addStudentInUniform'); ?>">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="moduleFormModalLabel">Add Student</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Set Total</button>
-                </div>
-            </form>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="studentId" class="form-label">Student ID</label>
+                            <input type="text" class="form-control" id="studentId" placeholder="Enter student ID"
+                                name="studentId" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
 
+        <!-- Set Uniform Total Modal -->
+        <div class="modal fade" id="setTotalModal" tabindex="-1" aria-labelledby="setTotalModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <form class="modal-content" method="POST" action="<?= url_to('monitoring.setUniformAmount'); ?>">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="setTotalModalLabel">Set Uniform Total Amount</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="totalAmount" class="form-label">Total Amount</label>
+                            <input type="number" class="form-control" id="totalAmount" name="totalAmount"
+                                placeholder="Enter total amount" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Set Total</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    <?php endif; ?>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {

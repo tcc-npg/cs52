@@ -32,7 +32,7 @@
                         <div>Profile</div>
                     </a>
                 </li>
-                <?php if (auth()->user()->inGroup('student')) : ?>
+                <?php if (auth()->user()->inGroup('student')): ?>
                     <li class="menu-item <?= is_active_menu('user/subjects-enrolled', true); ?>">
                         <a href="<?= url_to('user.subjects-enrolled'); ?>" class="menu-link">
                             <div>My Subjects</div>
@@ -43,8 +43,8 @@
         </li>
 
         <!-- Monitoring System -->
-       <li class="menu-item <?= is_active_menu('monitoring*'); ?>">
-              <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <li class="menu-item <?= is_active_menu('monitoring*'); ?>">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons bx bx-dollar -"></i>
                 <div>Payables</div>
             </a>
@@ -64,13 +64,14 @@
                         <div>Other Payables</div>
                     </a>
                 </li>
-                <li class="menu-item <?= strpos(current_url(), 'monitoring/viewData/') !== false ? 'active' : ''; ?>">
-                    <a href="<?= url_to('monitoring.viewData') ; ?>" class="menu-link">
-                        <div>Analytics</div>
-                    </a>
-                </li>
-               
-            
+                <?php if (auth()->user()->inGroup('admin')): ?>
+                    <li class="menu-item <?= strpos(current_url(), 'monitoring/viewData/') !== false ? 'active' : ''; ?>">
+                        <a href="<?= url_to('monitoring.viewData'); ?>" class="menu-link">
+                            <div>Analytics</div>
+                        </a>
+                    </li>
+                <?php endif; ?>
+
             </ul>
         </li>
 
@@ -80,10 +81,10 @@
         <!-- Students menu -->
 
         <?php if (auth()->user()->inGroup('admin')): ?>
-            <?= $this->include('partials/menu-students')  ;?>
+            <?= $this->include('partials/menu-students'); ?>
         <?php endif; ?>
 
-         <!-- Inventory System -->
+        <!-- Inventory System -->
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">Inventory System</span>
         </li>
@@ -112,7 +113,7 @@
 
         <!-- Admin -->
         <?php if (auth()->user()->inGroup('admin')): ?>
-            <?= $this->include('partials/menu-admin')  ;?>
+            <?= $this->include('partials/menu-admin'); ?>
         <?php endif; ?>
     </ul>
 </aside>

@@ -19,7 +19,8 @@ class OtherPayableModel extends Model
 
     ];
 
-   
-
+    public function getStudentPayables($year_level){
+    return $this->whereIn('payees', [$year_level, 'all'])->findAll();
+    }
 
 }

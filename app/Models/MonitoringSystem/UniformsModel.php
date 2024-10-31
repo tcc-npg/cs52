@@ -16,7 +16,8 @@ class UniformsModel extends Model
         'amount',
         'shirt_size',
         'pants_size',
-        'status'
+        'status',
+        'balance'
 
     ];
 
@@ -24,13 +25,21 @@ class UniformsModel extends Model
     public function listStudentUniform()
     {
         return $this->select('b.first_name, b.last_name, c.student_number, b.gender, c.user_id,
-        ms_uniforms.shirt_size, ms_uniforms.pants_size,ms_uniforms.status, ms_uniforms.id, ms_uniforms.amount,')
+        ms_uniforms.shirt_size, ms_uniforms.pants_size,ms_uniforms.status, ms_uniforms.id, ms_uniforms.amount, ms_uniforms.balance')
             ->join('user_details b', 'ms_uniforms.user_id = b.user_id')
             ->join('student_details c', 'ms_uniforms.user_id = c.user_id')
             ->findAll();
 
     }
 
+    public function listStudentUniformInfo($user_id){
+        return $this->select('b.first_name, b.last_name, c.student_number, b.gender, c.user_id,
+        ms_uniforms.shirt_size, ms_uniforms.pants_size,ms_uniforms.status, ms_uniforms.id, ms_uniforms.amount, ms_uniforms.balance,')
+            ->join('user_details b', 'ms_uniforms.user_id = b.user_id')
+            ->join('student_details c', 'ms_uniforms.user_id = c.user_id')
+            ->where('ms_uniforms.user_id', $user_id)
+            ->first();
+    }
     public function updateStudentInformation($id, $data)
     {
         return $this->db->table($this->table)  // or 'ms_uniforms'

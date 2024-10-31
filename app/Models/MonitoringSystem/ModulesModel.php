@@ -10,7 +10,7 @@ class ModulesModel extends Model
     protected $primaryKey = 'module_id';
     protected $useAutoIncrement = true;
 
-    protected $allowedFields = ['code', 'amount'];
+    protected $allowedFields = ['code', 'amount', 'year_level'];
     protected $returnType = 'array';
 
     public function getModuleDetails()
@@ -21,6 +21,13 @@ class ModulesModel extends Model
             ->findAll();
     }
 
+    public function getStudentModules($year_level)
+    {
+        return $this->select(' ms_modules.module_id, ms_modules.amount, b.name, b.code, b.description, b.year_level')
+            ->join('subjects b', 'ms_modules.code = b.code')
+            ->where('ms_modules.year_level', $year_level)
+            ->findAll();
+    }
 
 }
 

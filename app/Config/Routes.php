@@ -114,11 +114,12 @@ $routes->group('monitoring', static function ($routes) {
 
     $routes->get('otherPayables', [MonitoringSystem::class, 'otherPayables'], ['as' => 'monitoring.otherPayables']);
     $routes->post('addNewPayable', [MonitoringSystem::class, 'addNewPayable'], ['as' => 'monitoring.addNewPayable']);
-    $routes->get('payeeList/(:num)/(:segment)', [MonitoringSystem::class, 'payeeList'], ['as' => 'monitoring.payeeList']);
+    $routes->get('payeeList/(:num)/(:any)', [MonitoringSystem::class, 'payeeList'], ['as' => 'monitoring.payeeList']);
     $routes->post('updatePayeeInfo/(:num)/(:num)', [MonitoringSystem::class, 'updatePayeeInfo'], ['as' => 'monitoring.updatePayeeInfo']);
     $routes->post('deleteOtherPayable', [MonitoringSystem::class, 'deleteOtherPayable'], ['as' => 'monitoring.deleteOtherPayable']);
     $routes->POST('deleteStudentInPayableList/(:num)', [MonitoringSystem::class, 'deleteStudentInPayableList'], ['as' => 'monitoring.deleteStudentInPayableList']);
-    
+    $routes->post('addStudentInPayableList', [MonitoringSystem::class, 'addStudentInPayableList'], ['as' => 'monitoring.addStudentInPayableList']);
+
 
     $routes->get('viewData', [MonitoringSystem::class, 'viewData'], ['as' => 'monitoring.viewData']);
 
