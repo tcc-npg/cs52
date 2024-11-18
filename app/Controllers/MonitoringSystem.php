@@ -22,7 +22,7 @@ class MonitoringSystem extends BaseController
     //******************************************************** UNNIFORM METHODS********************************************/
     public function uniform()
     {
-        helper('_sizes');
+        helper(['_sizes', '_status']);
         $model = model(UniformsModel::class);
         $payment_model = model(PaymentModel::class);
         $payeePayments = [];
@@ -48,16 +48,15 @@ class MonitoringSystem extends BaseController
 
                 $model->where('user_id', $student['user_id'])->update($student['id'], $data);
 
+
                 if ($student['balance'] == 0) {
                     $data = ['status' => 'p'];
                     $model->where('user_id', $student['user_id'])->update($student['id'], $data);
-                } elseif ($student['balance'] < $student['amount']) {
+                } elseif ($student['balance'] < $student['amount'] && !empty($payments)) {
                     $data = ['status' => 'c'];
                     $model->where('user_id', $student['user_id'])->update($student['id'], $data);
-                } else {
-                    $data = ['status' => null];
-                    $model->where('user_id', $student['user_id'])->update($student['id'], $data);
                 }
+
 
 
                 $payeePayments[] = [
@@ -68,6 +67,16 @@ class MonitoringSystem extends BaseController
         } else {
             $student = $model->listStudentUniformInfo(auth()->user()->id);
 
+            if (empty($student['user_id']) || empty($student['id'])) {
+
+
+                return view('monitoring/uniform', [
+                    'list' => $payeePayments
+                ]);
+            }
+            ;
+
+            // Now proceed with the query since the student data exists
             $payments = $payment_model->where('user_id', $student['user_id'])
                 ->where('uniform_id', $student['id'])
                 ->findAll();
@@ -82,16 +91,14 @@ class MonitoringSystem extends BaseController
                 'balance' => $newBalance
             ];
 
+           
             $model->where('user_id', $student['user_id'])->update($student['user_id'], $data);
-
+           
             if ($student['balance'] == 0) {
                 $data = ['status' => 'p'];
                 $model->where('user_id', $student['user_id'])->update($student['id'], $data);
-            } elseif ($student['balance'] < $student['amount']) {
+            } elseif ($student['balance'] < $student['amount'] && !empty($payments)) {
                 $data = ['status' => 'c'];
-                $model->where('user_id', $student['user_id'])->update($student['id'], $data);
-            } else {
-                $data = ['status' => null];
                 $model->where('user_id', $student['user_id'])->update($student['id'], $data);
             }
 
@@ -179,6 +186,8 @@ class MonitoringSystem extends BaseController
             // Load the models
             $uniform_model = model(UniformsModel::class);
             $payment_model = model(PaymentModel::class);
+            $email = \Config\Services::email();
+
 
             // Get the input from the form
             $shirt_size = $this->request->getPost('shirtSize');
@@ -191,42 +200,78 @@ class MonitoringSystem extends BaseController
 
             // Array to hold payment data if applicable
             $payment_data = [];
+            $subject = 'Uniform Information Update';
+            $message = ''; // Initialize the message variable
 
             // Check if shirt size is provided and update it
             if (!empty($shirt_size)) {
                 $uniform_model->where('user_id', $user_id)->set('shirt_size', $shirt_size)->update();
+                $message .= "The shirt size has been successfully updaten\n ";
                 $isUpdated = true;
             }
 
             // Check if pant size is provided and update it
             if (!empty($pant_size)) {
                 $uniform_model->where('user_id', $user_id)->set('pants_size', $pant_size)->update();
+                $message .= "The pants size has been successfully updated\n";
                 $isUpdated = true;
             }
 
             // Check if status is provided and update it
             if (!empty($new_status)) {
                 $uniform_model->where('user_id', $user_id)->set('status', $new_status)->update();
+                $message .= "The status has been successfully updated\n";
                 $isUpdated = true;
             }
 
-            // Check if payment is provided and handle the payment data
             if (isset($new_payment) && $new_payment !== '') {
                 $payment_data['amount'] = $new_payment;
 
                 if ($new_payment > 0) {
                     $payment_data['payment_date'] = date('Y-m-d H:i:s');
-
                     $payment_data['uniform_id'] = $uniform_id;
                     $payment_data['user_id'] = $user_id;
 
-                    $payment_model->insert($payment_data); // Fixed insert function typo
+                    $payment_model->insert($payment_data);
+                    $message .= "A payment of $new_payment has been successfully recorded\n";
                     $isUpdated = true;
+                }
+            }
+
+            // Check if payment is provided and handle the payment data
+
+            // Output the final message if there were updates, or provide an alternative message
+            if ($isUpdated) {
+
+                $student_details = $uniform_model->listStudentUniformInfo($user_id);
+
+                // Ensure student email exists
+                if (!empty($student_details['secret'])) {
+                    $student_email = $student_details['secret'];
+
+
+                    // Set email parameters
+                    $email->setFrom('smasher.warren@gmail.com', 'College of Computer Studies Office');
+                    $email->setTo($student_email);
+                    $email->setSubject($subject);
+                    $email->setMessage($message);
+
+                    // Send email and handle response
+                    if ($email->send()) {
+                        $updateSuccessMessage = 'Status updated, Email sent to student';
+                    } else {
+                        // Print error message if email not sent
+                        $errorData = $email->printDebugger(['headers']);
+                        print_r($errorData);
+                        exit;
+                    }
                 }
             }
 
             // If no updates were made, show an error message
             if (!$isUpdated) {
+
+
                 return redirectBackWithToast($updateErrorMessage, $toastColorError, $toastErrorHeader, $toastIconError);
             }
 
@@ -306,11 +351,12 @@ class MonitoringSystem extends BaseController
     public function modules()
     {
         $module_model = model(ModulesModel::class);
-
+        helper('inflector');
         if (auth()->user()->inGroup('admin')) {
             $list = $module_model->getModuleDetails();
             $subject_model = model(SubjectModel::class);
             $subject_list = $subject_model->findAll();
+
         } else {
             $list = $module_model->getStudentModules($this->user->getStudentDetails()->year_level);
             $subject_list = [];
@@ -323,11 +369,18 @@ class MonitoringSystem extends BaseController
 
     public function addModule()
     {
+
+        $updateSuccessMessage = 'Subject added successfully';
+        $toastHeader = 'Success';
+        $toastColor = 'success';
+        $toastIcon = 'bxs-check-circle';
+
         if (auth()->user()->inGroup('admin')) {
+
+
             $subject_code = $this->request->getPost('subjectCode');
             $amount = $this->request->getPost('amount');
             $year_level = $this->request->getPost('yearLevel');
-
 
             if (
                 $this->validate([
@@ -352,6 +405,20 @@ class MonitoringSystem extends BaseController
                     $toastIcon = 'bxs-error-circle';
                     return redirectBackWithToast($updateSuccessMessage, $toastColor, $toastHeader, $toastIcon);
                 } else {
+
+                    $student_model = model(StudentDetailsModel::class);
+
+                    $students = $student_model->getStudentsByYear($year_level);
+
+                    if (empty($students)) {
+                        $updateSuccessMessage = 'No students are currently enrolled.';
+                        $toastColor = 'warning';
+                        $toastHeader = 'Warning ';
+                        $toastIcon = 'bxs-info-circle';
+
+                        return redirectBackWithToast($updateSuccessMessage, $toastColor, $toastHeader, $toastIcon);
+                    }
+
                     // Module does not exist, proceed with saving
                     $module_model->save([
                         'code' => $subject_code,
@@ -381,37 +448,6 @@ class MonitoringSystem extends BaseController
                 ->first();
 
 
-            $year = '';
-            switch ($year_level) {
-                case '1st':
-                    $year = 1;
-                    break;
-                case '2nd':
-                    $year = 2;
-                    break;
-                case '3rd':
-                    $year = 3;
-                    break;
-                case '4th':
-                    $year = 4;
-                    break;
-                default:
-                    $year = 'all';
-
-            }
-            ;
-
-            $student_model = model(StudentDetailsModel::class);
-
-            $students = $student_model->getStudentsByYear($year);
-
-
-
-            $updateSuccessMessage = 'Subject added successfully';
-            $toastHeader = 'Success';
-            $toastColor = 'success';
-            $toastIcon = 'bxs-check-circle';
-
             if (empty($module)) {
                 $updateSuccessMessage = 'Subject not found';
                 $toastColor = 'warning';
@@ -440,16 +476,22 @@ class MonitoringSystem extends BaseController
         }
     }
 
-    public function studentsList(int|string $module_id, $name, $module_amount)
+    public function studentsList($module_id, $name)
     {
-
-        $module = model(ModuleStudentsModel::class);
+        helper('_status');
+        $module_model = model(ModulesModel::class);
+        $students_model = model(ModuleStudentsModel::class);
         $payment_model = model(PaymentModel::class);
+
+
+        $module = $module_model->where('module_id', $module_id)->first();
+
+        $module_amount = $module['amount'];
 
         $payeePayments = [];
 
         if (auth()->user()->inGroup('admin')) {
-            $students = $module->getStudentList($module_id);
+            $students = $students_model->getStudentList($module_id);
             foreach ($students as $student) {
                 $payments = $payment_model->where('user_id', $student['user_id'])
                     ->where('module_id', $module_id)
@@ -469,18 +511,16 @@ class MonitoringSystem extends BaseController
                 ];
 
 
-                $module->where('user_id', $student['user_id'])->update($student['user_id'], $data);
+                $students_model->where('user_id', $student['user_id'])->update($student['user_id'], $data);
 
                 if ($student['balance'] == 0) {
                     $data = ['status' => 'p'];
-                    $module->where('user_id', $student['user_id'])->update($student['user_id'], $data);
-                } elseif ($student['balance'] < $module_amount) {
+                    $students_model->where('user_id', $student['user_id'])->update($student['user_id'], $data);
+                } elseif ($student['balance'] < $module_amount && !empty($payments)) {
                     $data = ['status' => 'c'];
-                    $module->where('user_id', $student['user_id'])->update($student['user_id'], $data);
-                } else {
-                    $data = ['status' => null];
-                    $module->where('user_id', $student['user_id'])->update($student['user_id'], $data);
+                    $students_model->where('user_id', $student['user_id'])->update($student['user_id'], $data);
                 }
+
 
                 $payeePayments[] = [
                     'students' => $student,
@@ -489,7 +529,7 @@ class MonitoringSystem extends BaseController
             }
 
         } else {
-            $student = $module->getStudentModule(auth()->user()->id, $module_id);
+            $student = $students_model->getStudentModule(auth()->user()->id, $module_id);
             if (empty($student)) {
                 $updateSuccessMessage = 'Student not in the list. Please notify admin.';
                 $toastColor = 'warning';
@@ -499,6 +539,7 @@ class MonitoringSystem extends BaseController
                 return redirectBackWithToast($updateSuccessMessage, $toastColor, $toastHeader, $toastIcon);
 
             }
+
             $payments = $payment_model->where('user_id', $student['user_id'])
                 ->where('module_id', $module_id)
                 ->findAll();
@@ -517,17 +558,14 @@ class MonitoringSystem extends BaseController
                 'balance' => $newBalance
             ];
 
-            $module->where('user_id', $student['user_id'])->update($student['user_id'], $data);
+            $students_model->where('user_id', $student['user_id'])->update($student['user_id'], $data);
 
             if ($student['balance'] == 0) {
                 $data = ['status' => 'p'];
-                $module->where('user_id', $student['user_id'])->update($student['user_id'], $data);
-            } elseif ($student['balance'] < $module_amount) {
+                $students_model->where('user_id', $student['user_id'])->update($student['user_id'], $data);
+            } elseif ($student['balance'] < $module_amount && !empty($payments)) {
                 $data = ['status' => 'c'];
-                $module->where('user_id', $student['user_id'])->update($student['user_id'], $data);
-            } else {
-                $data = ['status' => null];
-                $module->where('user_id', $student['user_id'])->update($student['user_id'], $data);
+                $students_model->where('user_id', $student['user_id'])->update($student['user_id'], $data);
             }
 
             $payeePayments[] = [
@@ -565,50 +603,87 @@ class MonitoringSystem extends BaseController
 
     public function updateStudentModuleStatus($user_id, $module_id)
     {
-
+        // Load models
         $module_student = model(ModuleStudentsModel::class);
         $payment_model = model(PaymentModel::class);
+        $email = \Config\Services::email();
 
+        // Get input data
         $new_status = $this->request->getPost('status');
         $payment = $this->request->getPost('payment');
+        $module_name = $this->request->getPost('moduleName');
 
+        // Prepare update data
         $data = [];
+        $subject = 'Module Information Update : ' . $module_name;
+        $message = "Dear Student, \n\n"; // Initialize the message variable
 
+        // Update module status if provided
         if (!empty($new_status)) {
             $module_student->where('user_id', $user_id)->set('status', $new_status)->update();
+            $message .= "The status of your module, \"$module_name,\" has been successfully updated.";
         }
+
+        // Handle payment processing
         if (isset($payment) && $payment !== '') {
             $data['amount'] = $payment;
 
-            // Only set the payment date if the payment is greater than 0
+            // Only set payment date if payment is greater than 0
             if ($payment > 0) {
                 $data['payment_date'] = date('Y-m-d H:i:s');
                 $data['module_id'] = $module_id;
+                $data['user_id'] = $user_id;
 
                 // Insert a new payment record for the user
-                $data['user_id'] = $user_id;            // Set user ID
-                $payment_model->insert($data);          // Insert the new record
+                $payment_model->insert($data);
+
+                // Add payment details to the message
+                $message .= "\nA payment of PHP " . number_format($payment, 2) . " has been recorded.";
             }
+
+
+
         } else {
+            // Handle cases where no new status or payment data is provided
             if (empty($new_status)) {
                 $updateSuccessMessage = 'Please enter data fields.';
                 $toastColor = 'warning';
-                $toastHeader = 'Warning ';
+                $toastHeader = 'Warning';
                 $toastIcon = 'bxs-info-circle';
 
                 return redirectBackWithToast($updateSuccessMessage, $toastColor, $toastHeader, $toastIcon);
             }
         }
+        // Get student details
+        $student_details = $module_student->getStudentModule($user_id, $module_id);
 
+        // Ensure student email exists
+        if (!empty($student_details['secret'])) {
+            $student_email = $student_details['secret'];
 
+            // Set email parameters
+            $email->setFrom('smasher.warren@gmail.com', 'College of Computer Studies Office');
+            $email->setTo($student_email);
+            $email->setSubject($subject);
+            $email->setMessage($message);
 
+            // Send email and handle response
+            if ($email->send()) {
+                $updateSuccessMessage = 'Status updated, Email sent to student';
+            } else {
+                // Print error message if email not sent
+                $errorData = $email->printDebugger(['headers']);
+                print_r($errorData);
+                exit;
+            }
+        }
 
-        $updateSuccessMessage = 'Status updated';
         $toastHeader = 'Success';
         $toastColor = 'success';
         $toastIcon = 'bxs-check-circle';
 
         return redirectBackWithToast($updateSuccessMessage, $toastColor, $toastHeader, $toastIcon);
+
     }
 
     public function deleteStudentInModuleList($user_id)
@@ -781,9 +856,9 @@ class MonitoringSystem extends BaseController
 
 
 
-    public function payeeList($payable_id, $payable_amount)
+    public function payeeList($payable_id)
     {
-
+        helper('_status');
         $payable_model = model(OtherPayableModel::class);
         $payment_model = model(PaymentModel::class);
 
@@ -793,6 +868,7 @@ class MonitoringSystem extends BaseController
         $amount = $payable['amount'];
         $name = $payable['payable_name'];
         $payable_id = $payable['payable_id'];
+        $payable_amount = $payable['amount'];
 
         $payee_model = model(PayeesModel::class);
 
@@ -808,9 +884,11 @@ class MonitoringSystem extends BaseController
 
                 $newBalance = 0;
                 $totalPayment = 0;
+                $payment_id = [];
 
                 foreach ($payments as $payment) {
                     $totalPayment += $payment['amount'];
+                    $payment_id[] = $payment['payment_id'];
                 }
 
                 $newBalance = $payable_amount - $totalPayment;
@@ -824,18 +902,15 @@ class MonitoringSystem extends BaseController
                 if ($payee['balance'] == 0) {
                     $data = ['status' => 'p'];
                     $payee_model->where('user_id', $payee['user_id'])->update($payee['user_id'], $data);
-                } elseif ($payee['balance'] < $payable_amount) {
+                } elseif ($payee['balance'] < $payable_amount && !empty($payments)) {
                     $data = ['status' => 'c'];
-                    $payee_model->where('user_id', $payee['user_id'])->update($payee['user_id'], $data);
-                } else {
-                    $data = ['status' => null];
                     $payee_model->where('user_id', $payee['user_id'])->update($payee['user_id'], $data);
                 }
 
-
                 $payeePayments[] = [
                     'payee' => $payee,
-                    'payments' => $payments
+                    'payments' => $payments,
+                    '$payment_id' => $payment_id
                 ];
             }
         } else {
@@ -854,6 +929,7 @@ class MonitoringSystem extends BaseController
                 ->findAll();
             $newBalance = 0;
             $totalPayment = 0;
+            
 
             foreach ($payments as $payment) {
                 $totalPayment += $payment['amount'];
@@ -870,11 +946,8 @@ class MonitoringSystem extends BaseController
             if ($payee['balance'] == 0) {
                 $data = ['status' => 'p'];
                 $payee_model->where('user_id', $payee['user_id'])->update($payee['user_id'], $data);
-            } elseif ($payee['balance'] < $payable_amount) {
+            } elseif ($payee['balance'] < $payable_amount && !empty($payments)) {
                 $data = ['status' => 'c'];
-                $payee_model->where('user_id', $payee['user_id'])->update($payee['user_id'], $data);
-            } else {
-                $data = ['status' => null];
                 $payee_model->where('user_id', $payee['user_id'])->update($payee['user_id'], $data);
             }
 
@@ -902,27 +975,38 @@ class MonitoringSystem extends BaseController
         if (auth()->user()->inGroup('admin')) {
             $payee_model = model(PayeesModel::class);
             $payment_model = model(PaymentModel::class);
+            $email = \Config\Services::email();
 
             $new_status = $this->request->getPost('status');
             $payment = $this->request->getPost('payment');
+            $payable_name = $this->request->getPost('payableName');
 
 
             $data = [];
+            $subject = 'Payable Information Update: ' . $payable_name;
+            $message = "Dear Student, \n\n"; // Initialize the message variable
 
+            // Update payable status if provided
             if (!empty($new_status)) {
                 $payee_model->where('user_id', $user_id)->set('status', $new_status)->update();
+                $message .= "The status of your payable, \"$payable_name,\" has been successfully updated.";
             }
+
+            // Handle payment processing
             if (isset($payment) && $payment !== '') {
                 $data['amount'] = $payment;
 
-                // Only set the payment date if the payment is greater than 0
+                // Only set payment date if payment is greater than 0
                 if ($payment > 0) {
                     $data['payment_date'] = date('Y-m-d H:i:s');
                     $data['payable_id'] = $payable_id;      // Set payable ID
+                    $data['user_id'] = $user_id;            // Set user ID
 
                     // Insert a new payment record for the user
-                    $data['user_id'] = $user_id;            // Set user ID
-                    $payment_model->insert($data);          // Insert the new record
+                    $payment_model->insert($data);
+
+                    // Add payment details to the message
+                    $message .= "\n\nA payment of PHP " . number_format($payment, 2) . " has been recorded.";
                 }
             } else {
                 if (empty($new_status)) {
@@ -935,9 +1019,28 @@ class MonitoringSystem extends BaseController
                 }
             }
 
+            $payee_details = $payee_model->getPayee($user_id, $payable_id);
 
+            if (!empty($payee_details['secret'])) {
+                $student_email = $payee_details['secret'];
 
-            $updateSuccessMessage = 'Status updated';
+                // Set email parameters
+                $email->setFrom('smasher.warren@gmail.com', 'College of Computer Studies Office');
+                $email->setTo($student_email);
+                $email->setSubject($subject);
+                $email->setMessage($message);
+
+                // Send email and handle response
+                if ($email->send()) {
+                    $updateSuccessMessage = 'Status updated, Email sent to student';
+                } else {
+                    // Print error message if email not sent
+                    $errorData = $email->printDebugger(['headers']);
+                    print_r($errorData);
+                    exit;
+                }
+            }
+
             $toastHeader = 'Success';
             $toastColor = 'success';
             $toastIcon = 'bxs-check-circle';
@@ -977,10 +1080,12 @@ class MonitoringSystem extends BaseController
     }
 
 
-    public function deleteStudentInPayableList($user_id)
+    public function deleteStudentInPayableList($user_id, $payable_id)
     {
         if (auth()->user()->inGroup('admin')) {
             $payee_model = model(PayeesModel::class);
+            $payment_model = model(PaymentModel::class);
+
 
             $updateSuccessMessage = 'Student Removed';
             $toastHeader = 'Success';
@@ -989,6 +1094,7 @@ class MonitoringSystem extends BaseController
 
 
             $payee_model->delete($user_id);
+            
             return redirectBackWithToast($updateSuccessMessage, $toastColor, $toastHeader, $toastIcon);
         } else {
             $updateSuccessMessage = 'Unauthorized Access';
@@ -1265,5 +1371,6 @@ class MonitoringSystem extends BaseController
             ]);
         }
     }
+
 
 }

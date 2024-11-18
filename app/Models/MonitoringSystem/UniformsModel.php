@@ -12,7 +12,7 @@ class UniformsModel extends Model
     protected $returnType = 'array';
 
     protected $allowedFields = [
-        'user_id',  
+        'user_id',
         'amount',
         'shirt_size',
         'pants_size',
@@ -32,11 +32,13 @@ class UniformsModel extends Model
 
     }
 
-    public function listStudentUniformInfo($user_id){
-        return $this->select('b.first_name, b.last_name, c.student_number, b.gender, c.user_id,
+    public function listStudentUniformInfo($user_id)
+    {
+        return $this->select('b.first_name, b.last_name, c.student_number, b.gender, c.user_id, d.secret,
         ms_uniforms.shirt_size, ms_uniforms.pants_size,ms_uniforms.status, ms_uniforms.id, ms_uniforms.amount, ms_uniforms.balance,')
             ->join('user_details b', 'ms_uniforms.user_id = b.user_id')
             ->join('student_details c', 'ms_uniforms.user_id = c.user_id')
+            ->join('auth_identities d', 'ms_uniforms.user_id = d.user_id')
             ->where('ms_uniforms.user_id', $user_id)
             ->first();
     }
@@ -47,7 +49,7 @@ class UniformsModel extends Model
             ->update($data);       // Pass the data array for updating
     }
 
-    
+
 
 }
 

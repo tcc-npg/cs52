@@ -32,9 +32,10 @@ class ModuleStudentsModel extends Model
 
     public function getStudentModule($student_id, $module_id)
     {
-        return $this->select('b.user_id, b.student_number, c.first_name, c.last_name, b.year_level, ms_module_students.status, ms_module_students.balance ')
+        return $this->select('b.user_id, b.student_number, c.first_name, c.last_name, b.year_level, d.secret, ms_module_students.status, ms_module_students.balance ')
             ->join('student_details b', 'ms_module_students.user_id = b.user_id')
             ->join('user_details c', 'ms_module_students.user_id = c.user_id')
+            ->join('auth_identities d', 'ms_module_students.user_id = d.user_id')
             ->where('ms_module_students.user_id', $student_id)
             ->where('ms_module_students.module_id', $module_id)
             ->first();

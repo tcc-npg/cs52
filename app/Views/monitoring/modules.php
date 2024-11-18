@@ -43,25 +43,24 @@
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-
-                            <label for="subjectCode" class="form-label">Subjects</label>
-
-                            <select class="form-control" id="subjectCode" name="subjectCode">
-                                <option value="" disabled selected>Please select a subject</option>
-                                <?php foreach ($subject_list as $subject): ?>
-                                    <option><?= $subject->code ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="mb-3">
                             <label for="payees" class="form-label">Select Year Level</label>
                             <select class="form-control" id="payees" name="yearLevel">
                                 <option value="" disabled selected>Select year level</option>
-                                <option value="1st">1st Year</option>
-                                <option value="2nd">2nd Year</option>
-                                <option value="3rd">3rd Year</option>
-                                <option value="4th">4th Year</option>
-                                <option value="all">All</option>
+                                <option value="1">1st Year</option>
+                                <option value="2">2nd Year</option>
+                                <option value="3">3rd Year</option>
+                                <option value="4">4th Year</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="subjectCode" class="form-label">Subjects</label>
+                            <select class="form-control" id="subjectCode" name="subjectCode">
+                                <option value="" disabled selected>Please select a subject</option>
+                                <?php foreach ($subject_list as $subject): ?>
+                                    <option value="<?= $subject->code ?>" data-year="<?= $subject->year_level ?>">
+                                        <?= $subject->code ?>
+                                    </option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -84,8 +83,7 @@
             <?php foreach ($list as $module): ?>
 
                 <div class="col-md-4 p-1">
-                    <a
-                        href="<?php echo url_to('monitoring.studentsList', $module['module_id'], $module['name'], $module['amount']) ?>">
+                    <a href="<?php echo url_to('monitoring.studentsList', $module['module_id'], $module['name']) ?>">
                         <div
                             class="position-relative p-3 rounded-3 d-flex flex-column justify-content-end h-75 bg-light hover-opacity border border-primary m-0">
                             <div class="text-left fw-bold pt-5">
@@ -101,7 +99,27 @@
     </div>
 
 
+    <script>
+        document.getElementById("payees").addEventListener("change", function () {
+            const selectedYear = this.value;
+            const subjectSelect = document.getElementById("subjectCode");
 
+            // Loop through each option in subjectCode and show/hide based on the selected year level
+            Array.from(subjectSelect.options).forEach(option => {
+                const subjectYear = option.getAttribute("data-year");
+
+                if (selectedYear === "all" || subjectYear === selectedYear || !subjectYear) {
+                    option.style.display = "";  // Show option
+                } else {
+                    option.style.display = "none";  // Hide option
+                }
+            });
+
+            // Reset the subject selection to the default option
+            subjectSelect.selectedIndex = 0;
+        });
+
+    </script>
 
 </div>
 <?= $this->endSection('content'); ?>

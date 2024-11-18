@@ -43,29 +43,33 @@
         </li>
 
         <!-- Monitoring System -->
-        <li class="menu-item <?= is_active_menu('monitoring*'); ?>">
+        <li class="menu-item <?= is_active_menu('payables*'); ?>">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons bx bx-dollar -"></i>
                 <div>Payables</div>
             </a>
             <ul class="menu-sub">
-                <li class="menu-item <?= strpos(current_url(), 'monitoring/modules') !== false ? 'active' : ''; ?>">
+                <li
+                    class="menu-item <?= (strpos(current_url(), 'payables/modules') !== false || strpos(current_url(), 'payables/studentsList') !== false) ? 'active' : ''; ?>">
                     <a href="<?= url_to('monitoring.modules'); ?>" class="menu-link">
                         <div>Module</div>
                     </a>
                 </li>
-                <li class="menu-item <?= is_active_menu('monitoring/uniform', true) ? 'active' : ''; ?>">
+
+                <li class="menu-item <?= is_active_menu('payables/uniform', true) ? 'active' : ''; ?>">
                     <a href="<?= url_to('monitoring.uniform'); ?>" class="menu-link">
                         <div>Uniform</div>
                     </a>
                 </li>
-                <li class="menu-item <?= is_active_menu('monitoring/otherPayables', true) ? 'active' : ''; ?>">
+                <li
+                    class="menu-item <?= (strpos(current_url(), 'payables/payeeList') !== false || strpos(current_url(), 'payables/otherPayables') !== false) ? 'active' : ''; ?>">
                     <a href="<?= url_to('monitoring.otherPayables'); ?>" class="menu-link">
                         <div>Other Payables</div>
                     </a>
                 </li>
+
                 <?php if (auth()->user()->inGroup('admin')): ?>
-                    <li class="menu-item <?= strpos(current_url(), 'monitoring/viewData/') !== false ? 'active' : ''; ?>">
+                    <li class="menu-item <?= is_active_menu('payables/viewData', true) ? 'active' : ''; ?>">
                         <a href="<?= url_to('monitoring.viewData'); ?>" class="menu-link">
                             <div>Analytics</div>
                         </a>

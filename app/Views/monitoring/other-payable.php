@@ -36,7 +36,7 @@
 
 
                                 <tr class="cursor-pointer"
-                                    onclick="window.location='<?= url_to('monitoring.payeeList', $payable['payable_id'], $payable['amount']); ?>'">
+                                    onclick="window.location='<?= url_to('monitoring.payeeList', $payable['payable_id']); ?>'">
 
                                     <td><strong><?= $payable['payable_name']; ?></strong></td>
                                     <td class="text-center">PHP <?= $payable['amount']; ?></td>

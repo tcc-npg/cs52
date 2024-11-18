@@ -1,5 +1,5 @@
 <?= $this->extend('default'); ?>
-<?= $this->section('pageTitle'); ?>- Dashboard<?= $this->endSection('pageTitle'); ?>
+<?= $this->section('pageTitle'); ?>- <?php echo $name; ?><?= $this->endSection('pageTitle'); ?>
 <?= $this->section('content'); ?>
 <div class="container-xxl flex-grow-1 container-p-y">
 
@@ -15,18 +15,34 @@
         <?= $this->endSection('nonceScript'); ?>
 
     <?php endif; ?>
+
     <div class="row">
+        <?php if (auth()->user()->inGroup('admin')) {
+            echo $this->include('monitoring/search-bar');
+        } ?>
+        
         <div class="col-xxl">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <small class="text-muted float-end"><?php echo $name; ?></small>
+                    <!-- Back Button and Module Name Row -->
+                    <div class="d-flex align-items-center">
+                        <a href="<?php echo url_to('monitoring.modules') ?>" class="btn p-0 d-flex align-items-center"
+                            aria-label="Back">
+                            <i class="bx bx-arrow-back me-2" aria-hidden="true"></i>
+                            <small class="text-muted"><?php echo $name; ?></small>
+                        </a>
+                    </div>
+
+                    <!-- Delete Button (Admin Only) -->
                     <?php if (auth()->user()->inGroup('admin')): ?>
                         <button type="button" class="btn" aria-label="More options" data-bs-toggle="modal"
                             data-bs-target="#deleteModal">
                             <i class="bx bx-trash" aria-hidden="true"></i>
                         </button>
+                    <?php endif; ?>
 
-                        <!-- Modal for Deleting the Module -->
+                    <!-- Modal for Deleting the Module -->
+                    <?php if (auth()->user()->inGroup('admin')): ?>
                         <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel"
                             aria-hidden="true">
                             <div class="modal-dialog">
@@ -50,6 +66,8 @@
                         </div>
                     <?php endif; ?>
                 </div>
+
+
 
                 <!-- Table for Module List -->
                 <div class="table-responsive text-nowrap">
@@ -89,7 +107,8 @@
                                 ?>
                                 <tr>
                                     <td class><?= $student['student_number']; ?></td>
-                                    <td class="text-center"><?= $student['first_name'] . ' ' . $student['last_name']; ?></td>
+                                    <td class="text-center"><?= $student['first_name'] . ' ' . $student['last_name']; ?>
+                                    </td>
                                     <td class="text-center"><?= strtoupper($student['year_level']); ?></td>
                                     <td class="text-center">
                                         <?= !empty($paymentDetails) ? implode('<br>', $paymentDetails) : 'No Payment'; ?>
@@ -101,32 +120,36 @@
                                         <?= $student['balance'] > 0 ? number_format($student['balance'], 2) : 'No Balance'; ?>
                                     </td>
                                     <td class="text-center">
-                                        <?php
-                                        $status = $student['status'];
-                                        if ($status === null) {
-                                            echo 'no payment';
-                                        } else {
-                                            switch ($status) {
-                                                case 'p':
-                                                    echo 'PAID';
-                                                    break;
-                                                case 'c':
-                                                    echo 'CLAIMED | INCOMPLETE';
-                                                    break;
-                                                default:
-                                                    echo 'INCOMPLETE';
-                                            }
-                                        }
-                                        ?>
+                                        <?php echo getPaymentStatus($student['status']); ?>
                                     </td>
 
                                     <?php if (auth()->user()->inGroup('admin')): ?>
                                         <td class="text-center">
-                                            <!-- Edit Student Button -->
-                                            <button class="btn btn-edit" data-bs-toggle="modal"
-                                                data-bs-target="#editFormModal<?= $student['user_id']; ?>">
-                                                <i class='bx bx-edit'></i>
-                                            </button>
+                                            <div class="btn-group">
+                                                <button type="button"
+                                                    class="btn btn-primary btn-icon rounded-pill dropdown-toggle hide-arrow btn-sm"
+                                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                    <!-- Edit Student -->
+                                                    <li>
+                                                        <a class="dropdown-item" href="javascript:void(0);"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#editFormModal<?= $student['user_id']; ?>">
+                                                            Edit Student Info
+                                                        </a>
+                                                    </li>
+                                                    <!-- Delete Student -->
+                                                    <l <a class="dropdown-item" href="javascript:void(0);"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#deleteStudent<?= $student['user_id']; ?>">
+                                                        Delete
+                                                        </a>
+                                                        </li>
+                                                </ul>
+                                            </div>
+
                                             <!-- Modal for Editing Student Status -->
                                             <div class="modal fade" id="editFormModal<?= $student['user_id']; ?>" tabindex="-1"
                                                 aria-labelledby="moduleFormModalLabel<?= $student['user_id']; ?>"
@@ -137,17 +160,21 @@
                                                         <div class="modal-header">
                                                             <h5 class="modal-title"
                                                                 id="moduleFormModalLabel<?= $student['user_id']; ?>">Edit
-                                                                Student Info
-                                                            </h5>
+                                                                Student Info</h5>
                                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                                 aria-label="Close"></button>
                                                         </div>
                                                         <div class="modal-body text-start">
+
+                                                            <!-- Hidden input to hold the name value -->
+                                                            <input type="hidden" name="moduleName" value="<?= $name; ?>">
+
                                                             <div class="mb-3">
                                                                 <label for="payment" class="form-label">Update Payment</label>
                                                                 <input type="number" class="form-control" id="payment"
                                                                     name="payment" placeholder="Enter payment amount" min="0"
-                                                                    max=<?= $student['balance']?>>
+                                                                    max="<?= $student['balance'] ?>">
+
                                                                 <label for="status" class="form-label">Status</label>
                                                                 <select class="form-control" id="status" name="status">
                                                                     <option value="" disabled selected>Update Status</option>
@@ -164,15 +191,11 @@
                                                     </form>
                                                 </div>
                                             </div>
-                                            <!-- Delete Student Button -->
-                                            <button type="button" class="btn" aria-label="More options" data-bs-toggle="modal"
-                                                data-bs-target="#deleteStudent">
-                                                <i class='bx bx-trash'></i>
-                                            </button>
 
                                             <!-- Modal for Deleting Student -->
-                                            <div class="modal fade" id="deleteStudent" tabindex="-1"
-                                                aria-labelledby="deleteStudentLabel" aria-hidden="true">
+                                            <div class="modal fade" id="deleteStudent<?= $student['user_id']; ?>" tabindex="-1"
+                                                aria-labelledby="deleteStudentLabel<?= $student['user_id']; ?>"
+                                                aria-hidden="true">
                                                 <div class="modal-dialog">
                                                     <form class="modal-content" id="deleteForm" method="POST"
                                                         action="<?= url_to('monitoring.deleteStudentInModuleList', $student['user_id']); ?>">
@@ -194,6 +217,7 @@
                                                 </div>
                                             </div>
                                         </td>
+
                                     <?php endif; ?>
                                 </tr>
                             <?php endforeach; ?>
@@ -233,6 +257,6 @@
                 </form>
             </div>
         </div>
-    <?php endif; ?> 
+    <?php endif; ?>
 </div>
 <?= $this->endSection('content'); ?>

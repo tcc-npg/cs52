@@ -34,7 +34,7 @@
                 <!-- / Footer -->
                 <div class="content-backdrop fade"></div>
             </div>
-            <!-- Content wrapper -->
+            <!-- Content wrapper -->    
         </div>
         <!-- / Layout page -->
     </div>

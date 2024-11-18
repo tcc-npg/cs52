@@ -33,11 +33,12 @@ class PayeesModel extends Model
 
     public function getPayee($user_id, $payable_id)
     {
-        return $this->select('b.user_id, b.student_number, 
+        return $this->select('b.user_id, b.student_number,  d.secret,
         c.first_name, c.last_name, b.year_level, 
         ms_payable_payee.status, ms_payable_payee.balance ')
             ->join('student_details b', 'ms_payable_payee.user_id = b.user_id')
             ->join('user_details c', 'ms_payable_payee.user_id = c.user_id')
+            ->join('auth_identities d', 'ms_payable_payee.user_id = d.user_id')
             ->where('ms_payable_payee.user_id', $user_id)
             ->where('ms_payable_payee.payable_id', $payable_id)
             ->first();
